@@ -38,7 +38,7 @@
 > This project has **no affiliated cryptocurrency, token, or paid sponsorship program**. Anything claiming otherwise is unauthorized and should be treated as a scam. The only ways to support the project are the Ko-fi link below and contributing on GitHub.
 
 > [!NOTE]
-> **This is my fork of [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search).** The framework below is theirs. I adapted it to the French internship market for my own search (MSc Automotive Embedded Systems) and added the pieces listed here. My filled-in profile, CVs, cover letters and trackers are personal and stay out of the repo.
+> **This is my fork of [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search).** The framework below is theirs. I adapted it to the French internship market for my own search (MSc Automotive Embedded Systems) and added the pieces listed here. My filled-in profile, CVs, cover letters and trackers are personal and stay out of the repo: contact details go in a gitignored `profile.local.json` (`phone`, `email`, `location`, `workday_account`).
 >
 > | What I added | Where |
 > |---|---|
@@ -49,16 +49,17 @@
 > | **Project modules**: each project split into per-aspect blocks, and 4 are picked per posting so the CV stays on one page | [`11-project-modules.md`](.claude/skills/job-application-assistant/11-project-modules.md), [`project_modules.json`](.claude/skills/job-application-assistant/project_modules.json) |
 > | **DOCX templates** (Node + `docx`, PDF through Word) for a one-page sidebar CV and a plain cover letter | [`templates/cv/rishi-sidebar/`](templates/cv/rishi-sidebar/), [`templates/cover_letters/rishi-plain/`](templates/cover_letters/rishi-plain/) |
 > | **Bulk pipeline for Workday sites**: fetch about 900 postings from the Workday API, filter out clearance and nationality clauses, build the CV and letter, check the PDFs automatically (one page, text layer, nothing clipped), then fill the form | [`tools/autodoc.py`](tools/autodoc.py), [`tools/workday_thales.js`](tools/workday_thales.js), [`playbook`](tools/THALES_WORKDAY_PLAYBOOK.md) |
-> | Tracker split by job type, plus tests for the new tools | [`tools/split_tracker.py`](tools/split_tracker.py), [`tests/test_next_job.py`](tests/test_next_job.py), [`tests/test_outreach.py`](tests/test_outreach.py) |
+> | Tracker split by job type, a public results export, plus tests for the new tools | [`tools/split_tracker.py`](tools/split_tracker.py), [`tests/test_next_job.py`](tests/test_next_job.py), [`tests/test_outreach.py`](tests/test_outreach.py) |
 
 
 ## My results so far (updated 2026-11-12)
 
 What this fork has done in my own search in France, from 10 Sept to 12 Nov 2026. Each type of job is tracked and published separately. The CSVs keep only date, company, sector, role, channel, status and deadline. Recruiter contacts, notes and document paths are left out.
 
+<!-- results:start -->
 | Track | Sent | Interviews | Rejections | Withdrawn | Drafted, not sent | Period | Data |
 |---|---:|---:|---:|---:|---:|---|---|
-| Internships (main goal) | 316 | 2 | 36 | 2 | 44 | 2026-09-10 → 2026-11-12 | [`internships.csv`](results/internships.csv) |
+| Internships (main goal) | 319 | 2 | 36 | 2 | 44 | 2026-09-10 → 2026-11-12 | [`internships.csv`](results/internships.csv) |
 | Student jobs (part-time, max 20 h/week) | 53 | – | 6 | – | 6 | 2026-10-15 → 2026-11-09 | [`student_jobs.csv`](results/student_jobs.csv) |
 | Other part-time jobs | 23 | – | – | – | 6 | 2026-10-15 → 2026-11-11 | [`part_time_jobs.csv`](results/part_time_jobs.csv) |
 | Seasonal jobs | 3 | – | 1 | – | 3 | 2026-10-19 → 2026-10-29 | [`seasonal_jobs.csv`](results/seasonal_jobs.csv) |
@@ -71,9 +72,11 @@ What this fork has done in my own search in France, from 10 Sept to 12 Nov 2026.
 - Other part-time jobs: company site 13, linkedin 6, indeed 3, workable 1
 - Seasonal jobs: hellowork 2, online 1
 - Full-time jobs (track closed): hellowork 180, linkedin 14, recruitcrm 1, ashby 1
+<!-- results:end -->
 
 - **Sent** counts applications actually submitted (applied, interview, rejected and withdrawn). Drafted applications are ready but still need something from me, such as an account login, a CAPTCHA or an answer the bot doesn't have.
 - **Internships are the main goal.** The 2 interviews so far are with Valeo and Entroview, and another company rejected me after 2 interview rounds. The other tracks were side searches for student income.
+- Refresh with `python tools/publish_results.py`.
 - **The full-time track is closed.** Those applications came from one bulk run in late October and early November, before I confirmed that my student permit only covers internships and part-time work.
 
 ## Does it actually work?

@@ -38,9 +38,15 @@ SIDEBAR = {
     "sw": ("Logiciel", ["C++, Python, C", "Git, GitLab CI, Docker", "OpenGL, Vulkan, SQL"]),
 }
 LANG = ("Langues", ["Anglais — Courant (C1)", "Français — Basique (A2)", "Hindi — B2", "Malayalam — Courant (C2)"])
-CONTACT = {"phone": "<phone>", "email": "<email>", "location": "<city>, France",
+# Private contact details live in profile.local.json at the repo root (gitignored), so this file
+# can be published as is. Placeholders are used when the file is missing.
+_LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "profile.local.json")
+PRIVATE = json.load(open(_LOCAL, encoding="utf-8")) if os.path.exists(_LOCAL) else {}
+CONTACT = {"phone": PRIVATE.get("phone", "<phone>"), "email": PRIVATE.get("email", "<email>"),
+           "location": PRIVATE.get("location", "<city>, France"),
            "linkedin": {"text": "linkedin.com/in/rishikesh-sudheer-31977522a", "url": "https://www.linkedin.com/in/rishikesh-sudheer-31977522a"},
            "github": {"text": "github.com/rshz3028", "url": "https://github.com/rshz3028"}}
+WORKDAY_ACCOUNT = PRIVATE.get("workday_account", "<account email>")
 EDU = {"heading": "Formation", "entries": [
     {"title": "Master en Systèmes Embarqués Automobile", "dates": "2025 - Présent", "sub": "ESIGELEC, Rouen, France · fin prévue en février 2027 · R&D 20/20 (1er sur 11)"},
     {"title": "Bachelor of Technology, Electrical & Computer Engineering", "dates": "2021 - 2025", "sub": "Amrita Vishwa Vidyapeetham, Kollam, Inde"}]}
@@ -156,7 +162,8 @@ def core(t):
 def clean_title(t):
     t = re.sub(r"^\s*stage\s*[-–—:]*\s*", "", t, flags=re.I); t = re.sub(r"\s*[-–(]*\s*(F\s*/\s*H|H\s*/\s*F|F\s*/\s*M)\s*\)?.*$", "", t, flags=re.I)
     t = re.sub(r"de nos", "des", t); t = re.sub(r"nos", "les", t); t = re.sub(r"notre", "la", t)
-    return t.strip(" -–")
+    t = re.sub(r"\s+[–—]\s+", ", ", t)
+    return t.strip(" -–—,")
 
 
 def is_french(t):
@@ -359,12 +366,12 @@ def record(req, fit=""):
     p = os.path.join(ROOT, "job_search_tracker.csv")
     with open(p, encoding="utf-8") as f: header = next(csv.reader(f))
     row = {"date": time.strftime("%Y-%m-%d"), "company": "Thales", "sector": "Defence / aerospace / electronics", "role": b["title"], "role_type": "internship",
-           "channel": "Thales Workday (<account email>)", "status": "applied", "fit_rating": fit,
+           "channel": f"Thales Workday ({WORKDAY_ACCOUNT})", "status": "applied", "fit_rating": fit,
            "notes": f"{req}; autodoc theme {b['theme']}; no habilitation clause; CV+letter (FR); {b['url']}", "cv_file": b["cv_file"],
            "cover_letter_file": b["cl_file"], "source": "Thales careers (Workday)"}
     with open(p, "a", newline="", encoding="utf-8") as f: csv.DictWriter(f, fieldnames=header, extrasaction="ignore").writerow(row)
     open(os.path.join(b["dir"], "submission.md"), "w", encoding="utf-8").write(
-        f"# Submission\n\n- Date: {row['date']}\n- Channel: Thales Workday, account <account email>\n- Job: {b['title']} ({req})\n- URL: {b['url']}\n"
+        f"# Submission\n\n- Date: {row['date']}\n- Channel: Thales Workday, account {WORKDAY_ACCOUNT}\n- Job: {b['title']} ({req})\n- URL: {b['url']}\n"
         "- Files: Rishikesh_Sudheer_Resume_Thales.pdf, Lettre_Motivation_Thales.pdf\n- Confirmation: 'Candidature soumise'\n")
     print("recorded", req)
 

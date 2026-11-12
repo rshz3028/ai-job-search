@@ -13,7 +13,7 @@ python tools/autodoc.py record <REQ> <fit>    # after a confirmed submit
 - Build checks (`"ok": true` required): CV and letter exactly 1 page, contact as text, last tech term present (no clipping), letter closing present, no unclaimed/banned terms, no dashes in letter prose. Fix failures in THEMES/EVID of `autodoc.py`, never per job.
 - Each build prints `apply` = externalUrl with `/fr-FR/` + `/apply/useMyLastApplication`.
 
-## 2. Form (account <account email>; the candidate logs in, never type the password)
+## 2. Form (account <workday_account from profile.local.json>; the candidate logs in, never type the password)
 The `apply` URL ("Utiliser ma dernière candidature") pre-fills name, address, phone, education, LinkedIn and the PREVIOUS files.
 Helper: once per Chrome profile `localStorage.wdThales = <workday_thales.js text>`; on each application `eval(localStorage.wdThales)`.
 
@@ -34,7 +34,7 @@ Helper: once per Chrome profile `localStorage.wdThales = <workday_thales.js text
 6. batch: `wd.submit()`, wait 4, check `Candidature soumise`; then `python tools/autodoc.py record <REQ> <fit>`.
 
 ## Post-application screening (8 questions, one email per application)
-After each Workday submit, Thales emails <account email> "Thales - Invites you to participate in our screening process" (all in ONE Gmail thread; deadline ~4 days). Each "Get Started" opens careers.thalesgroup.com/global/en/screening-answering.
+After each Workday submit, Thales emails <workday_account from profile.local.json> "Thales - Invites you to participate in our screening process" (all in ONE Gmail thread; deadline ~4 days). Each "Get Started" opens careers.thalesgroup.com/global/en/screening-answering.
 Answers: Stage temps plein / Bac+5 et plus / Oui (dernière année) / "ESIGELEC (Rouen)" / "Systèmes embarqués automobile (MSc Automotive Embedded Systems)" / 6 mois / "Dès maintenant (disponible immédiatement), flexible selon vos dates" / France entière.
 Fast loop (1 call each, done 2026-11-11 for all 46): in the screening tab, JS: click Start, `label.click()` on the 3 radio labels, focus textarea[i] then real `type`; JS: click duration button, click li "6 mois", `label.click()` "France entière", verify checked = "Stage temps plein|Bac+5 et plus|Oui|France entière" and 3 textareas filled, then click Submit; confirm URL /screening-thankyou. Then in Gmail (thread expanded, `div.adn` per message): scroll message i's "Get Started" to y=332, real click (908,332) opens a new tab; `tabs_context_mcp` gives its id.
 Gotchas: browser_batch validates tab ids up front (can't chain into a tab not yet opened); closing tabs inside a batch breaks the rest of it (close in a separate call); element refs shift between pages, so prefer label text + JS over refs.

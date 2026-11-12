@@ -121,3 +121,18 @@ company_research/*.json
 
 # Brainstorm mockups (superpowers visual companion) - never ship
 .superpowers/
+
+# --- Fork additions: personal data produced by my workflow ---
+# Private contact details read by tools/autodoc.py and the /outreach and Thales playbooks
+profile.local.json
+# Generated tracker views, application e-mails, delivery copies of CVs and letters
+trackers/
+email_applications/
+cv/*.docx
+cover_letters/*.docx
+documents/*.md
+!documents/README.md
+documents/email_audit_*/
+job_fair_nov/
+job_scraper/thales/
+part_time_applications.md

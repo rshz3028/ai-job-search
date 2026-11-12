@@ -36,16 +36,16 @@ Generic addresses are fine: open with "Bonjour," / "Dear Hiring Team," and ask i
   1. Applied on <applied_date> via <channel> for <role> at <site>; still very interested.
   2. Two concrete matches between the posting's main tasks and the work on the submitted CV (use the module titles on that CV, see `11-project-modules.md`). No new claims: every fact must be in the submitted CV or letter, or in `documents/RISHIKESH_PROFILE_EXPORT.md`. The BMS is never mentioned.
   3. Available immediately for 4-6 months on site, internship agreement with ESIGELEC; CV attached; glad to talk.
-- Closing: `Sincèrement,` / `Sincerely,` then `Rishikesh Sudheer`, `<phone>`, `linkedin.com/in/rishikesh-sudheer-31977522a`.
+- Closing: `Sincèrement,` / `Sincerely,` then `Rishikesh Sudheer`, `<phone from profile.local.json>`, `linkedin.com/in/rishikesh-sudheer-31977522a`.
 - Style per `03-writing-style.md`: no em-dashes, no clichés, no gaps or hedges, no "I hope this email finds you well", and do not ask whether the application was received.
 - **Attachment:** the `cv_pdf` from Step 1 (the CV that was actually submitted). If it is missing, use the latest CV in `archive_dir`. If neither exists, log `skipped` (no CV).
 
 Save each email as `<archive_dir>/outreach_YYYY-MM-DD.md` with To, source URL, Subject, Attachment and body. If there is no archive_dir, use `outreach/<company>_<role>_YYYY-MM-DD.md`.
 
 ## Step 4: Send (skip in `draft` mode)
-Send from **<email>** (the address on the CVs).
+Send from **<email from profile.local.json>** (the address on the CVs).
 - If a Gmail connector tool can send with an attachment, use it.
-- Otherwise use Claude in Chrome (load the core tools plus `file_upload`, `find` and `javascript_tool` in one ToolSearch): open a new tab at `https://mail.google.com/mail/?authuser=<email>&view=cm&fs=1&to=<to>&su=<subject url-encoded>`. Check that the From field shows <email>, type the body into the message area, attach the PDF with `file_upload` on the compose file input (`input[type=file]`), and wait for the attachment chip. Then click Send once.
+- Otherwise use Claude in Chrome (load the core tools plus `file_upload`, `find` and `javascript_tool` in one ToolSearch): open a new tab at `https://mail.google.com/mail/?authuser=<email from profile.local.json>&view=cm&fs=1&to=<to>&su=<subject url-encoded>`. Check that the From field shows <email from profile.local.json>, type the body into the message area, attach the PDF with `file_upload` on the compose file input (`input[type=file]`), and wait for the attachment chip. Then click Send once.
 - Verify: search Sent for the subject (`in:sent subject:"..."`). If Gmail shows a bounce ("Address not found") later in the run, log the same application again with status `bounced`.
 - If the Gmail tab shows a login, CAPTCHA or security prompt, stop sending. Switch the remaining emails to `drafted` and leave the tab open.
 
