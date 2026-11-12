@@ -37,6 +37,21 @@
 >
 > This project has **no affiliated cryptocurrency, token, or paid sponsorship program**. Anything claiming otherwise is unauthorized and should be treated as a scam. The only ways to support the project are the Ko-fi link below and contributing on GitHub.
 
+> [!NOTE]
+> **This is my fork of [MadsLorentzen/ai-job-search](https://github.com/MadsLorentzen/ai-job-search).** The framework below is theirs. I adapted it to the French internship market for my own search (MSc Automotive Embedded Systems) and added the pieces listed here. My filled-in profile, CVs, cover letters and trackers are personal and stay out of the repo.
+>
+> | What I added | Where |
+> |---|---|
+> | **JobTeaser portal** (school login only), run in the logged-in browser through Claude in Chrome instead of a CLI. `/scrape` learns a `runner: chrome` portal type | [`.agents/skills/jobteaser-search/`](.agents/skills/jobteaser-search/), [`job-scraper/SKILL.md`](.claude/skills/job-scraper/SKILL.md) |
+> | **`/autopilot`**: a continuous loop that picks the next best-fit job, applies and submits it, with stop conditions (`N`, `until HH:MM`, `focus`, `draft`) | [`.claude/commands/autopilot.md`](.claude/commands/autopilot.md), [`tools/next_job.py`](tools/next_job.py) |
+> | **`/submit`**: fills the employer's form or email from a screening-answers bank. Never handles passwords or CAPTCHAs, and queues anything it can't answer instead of guessing | [`.claude/commands/submit.md`](.claude/commands/submit.md), [`10-screening-answers.md`](.claude/skills/job-application-assistant/10-screening-answers.md) (template) |
+> | **`/outreach`**: finds a published recruiter address and sends a short follow-up with the submitted CV, with a daily cap and a CSV log | [`.claude/commands/outreach.md`](.claude/commands/outreach.md), [`tools/outreach.py`](tools/outreach.py) |
+> | **Project modules**: each project split into per-aspect blocks, and 4 are picked per posting so the CV stays on one page | [`11-project-modules.md`](.claude/skills/job-application-assistant/11-project-modules.md), [`project_modules.json`](.claude/skills/job-application-assistant/project_modules.json) |
+> | **DOCX templates** (Node + `docx`, PDF through Word) for a one-page sidebar CV and a plain cover letter | [`templates/cv/rishi-sidebar/`](templates/cv/rishi-sidebar/), [`templates/cover_letters/rishi-plain/`](templates/cover_letters/rishi-plain/) |
+> | **Bulk pipeline for Workday sites**: fetch about 900 postings from the Workday API, filter out clearance and nationality clauses, build the CV and letter, check the PDFs automatically (one page, text layer, nothing clipped), then fill the form | [`tools/autodoc.py`](tools/autodoc.py), [`tools/workday_thales.js`](tools/workday_thales.js), [`playbook`](tools/THALES_WORKDAY_PLAYBOOK.md) |
+> | Tracker split by job type, plus tests for the new tools | [`tools/split_tracker.py`](tools/split_tracker.py), [`tests/test_next_job.py`](tests/test_next_job.py), [`tests/test_outreach.py`](tests/test_outreach.py) |
+
+
 ## Does it actually work?
 
 I'm a geophysicist by training. When my position was cut in late 2025, I built this framework to run my own job search - the same `/scrape`, `/apply`, and `/interview` workflow in this repo, used weekly, on my own career. I was upfront about it with every employer I spoke to, and instead of counting against me, it usually sparked a genuine technical conversation.

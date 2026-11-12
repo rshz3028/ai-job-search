@@ -1,0 +1,13 @@
+{
+  "name": "[YOUR_NAME]",
+  "contactLine": "[YOUR_CITY], [YOUR_COUNTRY] · [YOUR_PHONE] · [YOUR_EMAIL]",
+  "date": "",
+  "subject": "Subject: Application — [ROLE] ([REF]), [COMPANY] [SITE]",
+  "salutation": "Dear [Name / Hiring Manager],",
+  "paragraphs": [
+    "[Opening: role, site, start date, why this work fits, MSc]",
+    "[Body: projects mapped to the posting's tasks]",
+    "[Personal fit + close: structured, autonomous, curious ... I would be glad to discuss the role in an interview.]"
+  ],
+  "closing": "Sincerely,"
+}

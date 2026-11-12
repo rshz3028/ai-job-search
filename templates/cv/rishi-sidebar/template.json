@@ -1,0 +1,38 @@
+{
+  "photo": "[PATH_TO_PHOTO_RELATIVE_TO_THIS_JSON]",
+  "name": "[YOUR_NAME]",
+  "headline": "[ROLE-TARGETED HEADLINE, e.g. EMBEDDED SYSTEMS STUDENT — FIRMWARE, TEST & VALIDATION]",
+  "labels": { "contact": "Contact", "techUsed": "Technologies used: " },
+  "contact": {
+    "phone": "[YOUR_PHONE]",
+    "email": "[YOUR_EMAIL]",
+    "location": "[YOUR_CITY], [YOUR_COUNTRY]",
+    "linkedin": { "text": "[YOUR_LINKEDIN_SHORT]", "url": "[YOUR_LINKEDIN_URL]" },
+    "github": { "text": "[YOUR_GITHUB_SHORT]", "url": "[YOUR_GITHUB_URL]" }
+  },
+  "sidebar": [
+    { "heading": "[SKILL GROUP 1]", "bullets": ["[skill]", "[skill]", "[skill]"] },
+    { "heading": "[SKILL GROUP 2]", "bullets": ["[skill]", "[skill]", "[skill]"] },
+    { "heading": "[SKILL GROUP 3]", "bullets": ["[skill]", "[skill]", "[skill]"] },
+    { "heading": "[SKILL GROUP 4]", "bullets": ["[skill]", "[skill]", "[skill]"] },
+    { "heading": "Master Modules", "bullets": ["[module]", "[module]", "[module]", "[module]"] },
+    { "heading": "Languages", "lines": ["[Language — Level]", "[Language — Level]"] }
+  ],
+  "sections": [
+    { "heading": "Profile", "text": "[4-5 line tailored profile statement]" },
+    { "heading": "Education", "entries": [
+      { "title": "[DEGREE]", "dates": "[YYYY – Present]", "sub": "[INSTITUTION, CITY, COUNTRY]" },
+      { "title": "[DEGREE]", "dates": "[YYYY – YYYY]", "sub": "[INSTITUTION, CITY, COUNTRY]" }
+    ]},
+    { "heading": "Professional Experience", "entries": [
+      { "title": "[JOB_TITLE] — [COMPANY]", "dates": "[Mon YYYY – Mon YYYY]", "sub": "[PROJECT · LOCATION]",
+        "bullets": ["[bullet]", "[bullet]", "[bullet]"] }
+    ]},
+    { "heading": "Projects", "entries": [
+      { "title": "[PROJECT 1]", "dates": "[Mon YYYY – Mon YYYY]", "text": "[2-3 line description]", "tech": "[tech, tech]" },
+      { "title": "[PROJECT 2]", "dates": "[Mon YYYY – Mon YYYY]", "text": "[2-3 line description]", "tech": "[tech, tech]" },
+      { "title": "[PROJECT 3]", "dates": "[Mon YYYY – Mon YYYY]", "text": "[2-3 line description]", "tech": "[tech, tech]" },
+      { "title": "[PROJECT 4]", "dates": "[Mon YYYY – Mon YYYY]", "text": "[2-3 line description]", "tech": "[tech, tech]" }
+    ]}
+  ]
+}

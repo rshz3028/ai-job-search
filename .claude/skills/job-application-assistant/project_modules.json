@@ -1,0 +1,248 @@
+{
+  "_about": "Project MODULE library (since 2026-11-10). Each real project is split into modules, one per aspect. Per application, pick the modules that match the posting (see 11-project-modules.md for the rules) and drop parents that do not help. Every sentence here is grounded in documents/RISHIKESH_PROFILE_EXPORT.md. Do not add facts, numbers or tools that are not here or in the profile. The BMS is left out of all CVs and letters (candidate decision 2026-11-10).",
+  "parents": {
+    "mppt": {
+      "name_en": "24 V Solar MPPT Charger (SEPIC)",
+      "context_en": "Final-year project",
+      "context_fr": "Projet de fin d'études",
+      "dates": "Jan 2025 - May 2025",
+      "dates_fr": "Janv. 2025 - Mai 2025",
+      "sub_en": "Final-year project · 24 V solar MPPT charger",
+      "sub_fr": "Projet de fin d'études · chargeur solaire MPPT 24 V"
+    },
+    "bbw": {
+      "name_en": "Embedded Fault-Detection Pipeline, Brake-by-Wire",
+      "context_en": "MSc project",
+      "context_fr": "Projet de Master",
+      "dates": "Aug 2025 - Dec 2025",
+      "dates_fr": "Août 2025 - Déc. 2025",
+      "sub_en": "MSc project · brake-by-wire fault detection",
+      "sub_fr": "Projet de Master · détection de défauts brake-by-wire"
+    },
+    "imu": {
+      "name_en": "Dual-IMU Orientation Estimation & Sensor Fusion",
+      "context_en": "R&D project graded 20/20 (1st of 11)",
+      "context_fr": "Projet R&D noté 20/20 (1er sur 11)",
+      "dates": "Mar 2026 - Jul 2026",
+      "dates_fr": "Mars 2026 - Juil. 2026",
+      "sub_en": "R&D project graded 20/20 (1st of 11) · dual-IMU sensor fusion",
+      "sub_fr": "Projet R&D noté 20/20 (1er sur 11) · fusion de capteurs double IMU"
+    },
+    "ros": {
+      "name_en": "Autonomous Navigation & Perception, ROS2 / DJI RoboMaster EP",
+      "context_en": "MSc project",
+      "context_fr": "Projet de Master",
+      "dates": "Feb 2026 - Jul 2026",
+      "dates_fr": "Févr. 2026 - Juil. 2026",
+      "sub_en": "MSc project · DJI RoboMaster EP, ROS2",
+      "sub_fr": "Projet de Master · DJI RoboMaster EP, ROS2"
+    }
+  },
+  "modules": [
+    {
+      "id": "mppt-converter",
+      "parent": "mppt",
+      "fits": [
+        "power electronics",
+        "converter design",
+        "hardware",
+        "energy",
+        "solar",
+        "EV charging"
+      ],
+      "titles_en": [
+        "SEPIC DC-DC Power Converter",
+        "Solar Charge Converter (SEPIC) with MPPT",
+        "DC-DC Converter Design & Bench Test"
+      ],
+      "titles_fr": [
+        "Convertisseur de puissance DC-DC SEPIC",
+        "Convertisseur de charge solaire SEPIC avec MPPT"
+      ],
+      "text_en": "SEPIC converter charging a 12-14.6 V battery from a ~200 W panel (Vmp ~24 V), chosen so charging continues when panel voltage is near or below battery voltage. Power stage with coupled inductor, switches, gate drive and voltage/current sensing, with Perturb & Observe MPPT, bench-tested for tracking and efficiency.",
+      "text_fr": "Convertisseur SEPIC chargeant une batterie 12-14,6 V depuis un panneau d'environ 200 W (Vmp ~24 V), choisi pour maintenir la charge lorsque la tension du panneau est proche ou inférieure à celle de la batterie. Étage de puissance avec inductance couplée, interrupteurs, commande de grille et mesure tension/courant, MPPT Perturb & Observe, testé au banc (suivi, rendement).",
+      "tech_en": "Power electronics, SEPIC, MPPT (P&O), gate drive, voltage/current sensing",
+      "tech_fr": "Électronique de puissance, SEPIC, MPPT (P&O), commande de grille, mesure tension/courant"
+    },
+    {
+      "id": "mppt-control",
+      "parent": "mppt",
+      "fits": [
+        "control",
+        "MPPT",
+        "energy",
+        "solar"
+      ],
+      "titles_en": [
+        "MPPT Control, Perturb & Observe",
+        "Closed-Loop MPPT Control for a SEPIC Converter"
+      ],
+      "titles_fr": [
+        "Commande MPPT Perturb & Observe",
+        "Commande MPPT en boucle fermée, convertisseur SEPIC"
+      ],
+      "text_en": "Perturb & Observe maximum power point tracking in closed loop for a ~200 W panel feeding a SEPIC battery charger, using the converter's voltage/current sensing, bench-tested for tracking and efficiency.",
+      "text_fr": "Suivi du point de puissance maximale (Perturb & Observe) en boucle fermée pour un panneau d'environ 200 W alimentant un chargeur SEPIC, à partir des mesures tension/courant du convertisseur, testé au banc (suivi, rendement).",
+      "tech_en": "MPPT (P&O), closed-loop control, power electronics",
+      "tech_fr": "MPPT (P&O), commande en boucle fermée, électronique de puissance",
+      "note": "Use instead of mppt-converter (not together) when the posting is about control, not hardware. Thin on its own: never the lead project."
+    },
+    {
+      "id": "mppt-pcb",
+      "parent": "mppt",
+      "fits": [
+        "hardware design",
+        "PCB",
+        "electronics",
+        "protection circuits"
+      ],
+      "titles_en": [
+        "Power-Stage PCB Design & Protections",
+        "From Prototype Board to Custom PCB, Solar Charger"
+      ],
+      "titles_fr": [
+        "PCB d'étage de puissance et protections",
+        "Du prototype au PCB sur mesure, chargeur solaire"
+      ],
+      "text_en": "Took the charger power stage from a prototype board to a custom PCB in KiCad and bench-tested its protections: input overvoltage, reverse panel polarity and night-time reverse-current blocking.",
+      "text_fr": "Passage de l'étage de puissance du chargeur d'une carte prototype à un PCB sur mesure sous KiCad, et tests au banc des protections : surtension d'entrée, inversion de polarité du panneau et blocage du courant inverse la nuit.",
+      "tech_en": "KiCad, PCB design, protection circuits, bench testing",
+      "tech_fr": "KiCad, conception PCB, circuits de protection, tests au banc"
+    },
+    {
+      "id": "bbw-testbench",
+      "parent": "bbw",
+      "fits": [
+        "test & validation",
+        "fault injection",
+        "data acquisition",
+        "automotive safety"
+      ],
+      "titles_en": [
+        "Automated Fault-Injection Test Bench, Brake-by-Wire",
+        "Brake-by-Wire Test & Validation Pipeline"
+      ],
+      "titles_fr": [
+        "Banc de test par injection de fautes, Brake-by-Wire",
+        "Chaîne de test et validation Brake-by-Wire"
+      ],
+      "text_en": "Multi-sensor acquisition and real-time logging for a brake-by-wire system, with automated, reproducible fault-injection tests to generate and compare faulty and nominal behaviour.",
+      "text_fr": "Acquisition multi-capteurs et journalisation temps réel pour un système brake-by-wire, avec tests automatisés et reproductibles par injection de fautes pour comparer comportements nominal et défaillant.",
+      "tech_en": "Embedded C, Arduino, Python, fault injection, data logging, Git",
+      "tech_fr": "C embarqué, Arduino, Python, injection de fautes, journalisation, Git"
+    },
+    {
+      "id": "bbw-ml",
+      "parent": "bbw",
+      "fits": [
+        "embedded AI",
+        "machine learning",
+        "edge ML",
+        "diagnostics"
+      ],
+      "titles_en": [
+        "Embedded ML Fault Classifier on Kendryte K210",
+        "Quantized MLP for Real-Time Fault Detection"
+      ],
+      "titles_fr": [
+        "Classifieur de défauts embarqué sur Kendryte K210",
+        "MLP quantifié pour la détection de défauts temps réel"
+      ],
+      "text_en": "Trained an MLP classifier on sensor time-series from a brake-by-wire system, quantized it to 8 bits and deployed it on a dual-core Kendryte K210 for multi-class fault detection.",
+      "text_fr": "Entraînement d'un classifieur MLP sur des séries temporelles capteurs d'un système brake-by-wire, quantification 8 bits et déploiement sur un Kendryte K210 double cœur pour la détection multi-classes de défauts.",
+      "tech_en": "Python, machine learning, 8-bit quantization, Kendryte K210, Embedded C",
+      "tech_fr": "Python, apprentissage automatique, quantification 8 bits, Kendryte K210, C embarqué"
+    },
+    {
+      "id": "imu-fusion",
+      "parent": "imu",
+      "fits": [
+        "sensor fusion",
+        "estimation",
+        "control",
+        "navigation",
+        "algorithms"
+      ],
+      "titles_en": [
+        "Kalman-Filter Sensor Fusion, Dual IMU",
+        "Orientation Estimation & Algorithm Benchmarking"
+      ],
+      "titles_fr": [
+        "Fusion de capteurs par filtre de Kalman, double IMU",
+        "Estimation d'orientation et comparaison d'algorithmes"
+      ],
+      "text_en": "Kalman filters estimating orientation from two IMUs, with a statistical comparison of the estimation algorithms using RMSE, MAE and drift.",
+      "text_fr": "Filtres de Kalman pour l'estimation d'orientation à partir de deux IMU, avec comparaison statistique des algorithmes (RMSE, MAE, dérive).",
+      "tech_en": "C++, Kalman filter, sensor fusion, statistical analysis",
+      "tech_fr": "C++, filtre de Kalman, fusion de capteurs, analyse statistique"
+    },
+    {
+      "id": "imu-app",
+      "parent": "imu",
+      "fits": [
+        "software",
+        "C++",
+        "data acquisition",
+        "tools",
+        "visualisation",
+        "test benches"
+      ],
+      "titles_en": [
+        "Real-Time C++ Acquisition & 3D Visualisation",
+        "Serial Data Acquisition & 3D Display in C++"
+      ],
+      "titles_fr": [
+        "Acquisition et visualisation 3D temps réel en C++",
+        "Acquisition série et affichage 3D en C++"
+      ],
+      "text_en": "C++ application receiving two IMUs over serial, with real-time 3D roll/pitch display, scientific charts and data logging.",
+      "text_fr": "Application C++ recevant deux IMU par liaison série, avec affichage 3D temps réel (roulis/tangage), graphiques scientifiques et journalisation.",
+      "tech_en": "C++, serial communication, real-time visualisation, data logging",
+      "tech_fr": "C++, communication série, visualisation temps réel, journalisation"
+    },
+    {
+      "id": "ros-nav",
+      "parent": "ros",
+      "fits": [
+        "robotics",
+        "ROS2",
+        "autonomous systems",
+        "simulation"
+      ],
+      "titles_en": [
+        "ROS2 Autonomous Navigation, DJI RoboMaster EP",
+        "Mobile-Robot Navigation in ROS2 with Simulation"
+      ],
+      "titles_fr": [
+        "Navigation autonome ROS2, DJI RoboMaster EP",
+        "Navigation de robot mobile sous ROS2 avec simulation"
+      ],
+      "text_en": "ROS2 software in Python and C++ for autonomous navigation of a mobile robot from camera and distance-sensor data, tested in Gazebo and Unity simulation.",
+      "text_fr": "Logiciel ROS2 en Python et C++ pour la navigation autonome d'un robot mobile à partir de données caméra et capteurs de distance, testé en simulation Gazebo et Unity.",
+      "tech_en": "ROS2, Python, C++, Gazebo, Unity, Docker",
+      "tech_fr": "ROS2, Python, C++, Gazebo, Unity, Docker"
+    },
+    {
+      "id": "ros-vision",
+      "parent": "ros",
+      "fits": [
+        "computer vision",
+        "perception",
+        "ADAS",
+        "AI"
+      ],
+      "titles_en": [
+        "Vision-Based Obstacle Detection, OpenCV & YOLOv8",
+        "Robot Perception with YOLOv8"
+      ],
+      "titles_fr": [
+        "Détection d'obstacles par vision, OpenCV et YOLOv8",
+        "Perception robotique avec YOLOv8"
+      ],
+      "text_en": "Obstacle detection with OpenCV and YOLOv8 on the camera stream of a DJI RoboMaster EP, feeding the robot's ROS2 navigation.",
+      "text_fr": "Détection d'obstacles avec OpenCV et YOLOv8 sur le flux caméra d'un DJI RoboMaster EP, alimentant la navigation ROS2 du robot.",
+      "tech_en": "OpenCV, YOLOv8, Python, ROS2",
+      "tech_fr": "OpenCV, YOLOv8, Python, ROS2"
+    }
+  ]
+}
