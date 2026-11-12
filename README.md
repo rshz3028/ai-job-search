@@ -52,6 +52,30 @@
 > | Tracker split by job type, plus tests for the new tools | [`tools/split_tracker.py`](tools/split_tracker.py), [`tests/test_next_job.py`](tests/test_next_job.py), [`tests/test_outreach.py`](tests/test_outreach.py) |
 
 
+## My results so far (updated 2026-11-12)
+
+What this fork has done in my own search in France, from 10 Sept to 12 Nov 2026. Each type of job is tracked and published separately. The CSVs keep only date, company, sector, role, channel, status and deadline. Recruiter contacts, notes and document paths are left out.
+
+| Track | Sent | Interviews | Rejections | Withdrawn | Drafted, not sent | Period | Data |
+|---|---:|---:|---:|---:|---:|---|---|
+| Internships (main goal) | 316 | 2 | 36 | 2 | 44 | 2026-09-10 → 2026-11-12 | [`internships.csv`](results/internships.csv) |
+| Student jobs (part-time, max 20 h/week) | 53 | – | 6 | – | 6 | 2026-10-15 → 2026-11-09 | [`student_jobs.csv`](results/student_jobs.csv) |
+| Other part-time jobs | 23 | – | – | – | 6 | 2026-10-15 → 2026-11-11 | [`part_time_jobs.csv`](results/part_time_jobs.csv) |
+| Seasonal jobs | 3 | – | 1 | – | 3 | 2026-10-19 → 2026-10-29 | [`seasonal_jobs.csv`](results/seasonal_jobs.csv) |
+| Full-time jobs (track closed) | 197 | – | – | – | 9 | 2026-10-28 → 2026-11-09 | [`full_time_jobs.csv`](results/full_time_jobs.csv) |
+
+**Where the applications went** (sent only, top channels):
+
+- Internships (main goal): hellowork 106, online 63, workday 46, linkedin 31
+- Student jobs (part-time, max 20 h/week): hellowork 21, indeed 18, linkedin 7, recruitee 3
+- Other part-time jobs: company site 13, linkedin 6, indeed 3, workable 1
+- Seasonal jobs: hellowork 2, online 1
+- Full-time jobs (track closed): hellowork 180, linkedin 14, recruitcrm 1, ashby 1
+
+- **Sent** counts applications actually submitted (applied, interview, rejected and withdrawn). Drafted applications are ready but still need something from me, such as an account login, a CAPTCHA or an answer the bot doesn't have.
+- **Internships are the main goal.** The 2 interviews so far are with Valeo and Entroview, and another company rejected me after 2 interview rounds. The other tracks were side searches for student income.
+- **The full-time track is closed.** Those applications came from one bulk run in late October and early November, before I confirmed that my student permit only covers internships and part-time work.
+
 ## Does it actually work?
 
 I'm a geophysicist by training. When my position was cut in late 2025, I built this framework to run my own job search - the same `/scrape`, `/apply`, and `/interview` workflow in this repo, used weekly, on my own career. I was upfront about it with every employer I spoke to, and instead of counting against me, it usually sparked a genuine technical conversation.
