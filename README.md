@@ -52,24 +52,24 @@
 > | Tracker split by job type, a public results export, plus tests for the new tools | [`tools/split_tracker.py`](tools/split_tracker.py), [`tests/test_next_job.py`](tests/test_next_job.py), [`tests/test_outreach.py`](tests/test_outreach.py) |
 
 
-## My results so far (updated 2026-11-12)
+## My results so far (updated 2026-11-14)
 
 What this fork has done in my own search in France, from 10 Sept to 12 Nov 2026. Each type of job is tracked and published separately. The CSVs keep only date, company, sector, role, channel, status and deadline. Recruiter contacts, notes and document paths are left out.
 
 <!-- results:start -->
 | Track | Sent | Interviews | Rejections | Withdrawn | Drafted, not sent | Period | Data |
 |---|---:|---:|---:|---:|---:|---|---|
-| Internships (main goal) | 319 | 2 | 36 | 2 | 44 | 2026-09-10 → 2026-11-12 | [`internships.csv`](results/internships.csv) |
-| Student jobs (part-time, max 20 h/week) | 53 | – | 6 | – | 6 | 2026-10-15 → 2026-11-09 | [`student_jobs.csv`](results/student_jobs.csv) |
-| Other part-time jobs | 23 | – | – | – | 6 | 2026-10-15 → 2026-11-11 | [`part_time_jobs.csv`](results/part_time_jobs.csv) |
+| Internships (main goal) | 331 | 1 | 51 | 2 | 48 | 2026-09-10 → 2026-11-13 | [`internships.csv`](results/internships.csv) |
+| Student jobs (part-time, max 20 h/week) | 55 | 1 | 9 | – | 11 | 2026-10-15 → 2026-11-14 | [`student_jobs.csv`](results/student_jobs.csv) |
+| Other part-time jobs | 32 | – | 2 | – | 13 | 2026-10-15 → 2026-11-14 | [`part_time_jobs.csv`](results/part_time_jobs.csv) |
 | Seasonal jobs | 3 | – | 1 | – | 3 | 2026-10-19 → 2026-10-29 | [`seasonal_jobs.csv`](results/seasonal_jobs.csv) |
-| Full-time jobs (track closed) | 197 | – | – | – | 9 | 2026-10-28 → 2026-11-09 | [`full_time_jobs.csv`](results/full_time_jobs.csv) |
+| Full-time jobs (track closed) | 197 | – | 2 | – | 9 | 2026-10-28 → 2026-11-09 | [`full_time_jobs.csv`](results/full_time_jobs.csv) |
 
 **Where the applications went** (sent only, top channels):
 
-- Internships (main goal): hellowork 106, online 63, workday 46, linkedin 31
-- Student jobs (part-time, max 20 h/week): hellowork 21, indeed 18, linkedin 7, recruitee 3
-- Other part-time jobs: company site 13, linkedin 6, indeed 3, workable 1
+- Internships (main goal): hellowork 108, online 63, workday 51, linkedin 31
+- Student jobs (part-time, max 20 h/week): hellowork 21, indeed 18, linkedin 7, company site 3
+- Other part-time jobs: company site 15, linkedin 7, indeed 3, linkedin easy apply (workable) 2
 - Seasonal jobs: hellowork 2, online 1
 - Full-time jobs (track closed): hellowork 180, linkedin 14, recruitcrm 1, ashby 1
 <!-- results:end -->
@@ -78,6 +78,20 @@ What this fork has done in my own search in France, from 10 Sept to 12 Nov 2026.
 - **Internships are the main goal.** The 2 interviews so far are with Valeo and Entroview, and another company rejected me after 2 interview rounds. The other tracks were side searches for student income.
 - Refresh with `python tools/publish_results.py`.
 - **The full-time track is closed.** Those applications came from one bulk run in late October and early November, before I confirmed that my student permit only covers internships and part-time work.
+
+## Documentation and diagrams
+
+| Document | What it covers |
+|---|---|
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System context, layered components, data model (ER and state diagrams), document build pipeline, trust boundaries, CI/CD, tool reference |
+| [docs/WORKFLOWS.md](docs/WORKFLOWS.md) | End-to-end pipeline, `/autopilot` loop, `/scrape`, `/rank`, `/apply` and `/submit` flows, inbox sync and follow-up, reporting, daily routine |
+
+```mermaid
+flowchart LR
+    scrape["/scrape"] --> rank["/rank"] --> pick["next_job.py"] --> apply["/apply<br/>draft, review, build, verify"] --> submit["/submit"] --> record["tracker CSV"]
+    record --> sync["/gmail-sync"] --> outreach["/outreach"] --> outcome["/outcome, /interview"]
+    record -->|"/autopilot loop"| pick
+```
 
 ## Does it actually work?
 
