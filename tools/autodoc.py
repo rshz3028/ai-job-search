@@ -48,7 +48,7 @@ CONTACT = {"phone": PRIVATE.get("phone", "<phone>"), "email": PRIVATE.get("email
            "github": {"text": "github.com/rshz3028", "url": "https://github.com/rshz3028"}}
 WORKDAY_ACCOUNT = PRIVATE.get("workday_account", "<account email>")
 EDU = {"heading": "Formation", "entries": [
-    {"title": "Master en Systèmes Embarqués Automobile", "dates": "2025 - Présent", "sub": "ESIGELEC, Rouen, France · fin prévue en février 2027 · R&D 20/20 (1er sur 11)"},
+    {"title": "Master en Systèmes Embarqués Automobile", "dates": "2025 - Présent", "sub": "ESIGELEC, Rouen, France · convention de stage fournie · R&D 20/20 (1er sur 11)"},
     {"title": "Bachelor of Technology, Electrical & Computer Engineering", "dates": "2021 - 2025", "sub": "Amrita Vishwa Vidyapeetham, Kollam, Inde"}]}
 INNSPARK = {"title": "Stagiaire Systèmes Embarqués — Innspark", "dates": "Août 2024 - Nov. 2024", "sub": "Prototype de lecteur OBD-II · Inde", "bullets": [
     "Conception d'un prototype de lecteur OBD-II : circuit électronique et firmware embarqué en C pour lire les données de diagnostic du véhicule.",
@@ -262,14 +262,15 @@ def compose(j):
           "sections": [{"heading": "Profil", "text": INTRO + " " + th["profile"]}, EDU, {"heading": "Expérience Professionnelle", "entries": [INNSPARK]},
                        {"heading": "Projets", "entries": [project(p) for p in th["projects"]]}]}
     p1 = (f"Je vous adresse ma candidature pour le stage « {title} » chez {entity} à {site}. Ce sujet rejoint ce qui me motive le plus : {th['hook']}. "
-          "Je suis étudiant en dernière année de Master Systèmes Embarqués Automobile à l'ESIGELEC et je suis disponible immédiatement pour un stage de six mois.")
+          "Je suis étudiant en dernière année de Master Systèmes Embarqués Automobile à l'ESIGELEC et je suis disponible immédiatement pour un stage de six mois, sous convention de stage ESIGELEC.")
     body = " ".join(EVID[e] for e in th["evid"][:3])
     if asked:
         lst = ", ".join(asked[:-1]) + (" et " + asked[-1] if len(asked) > 1 else asked[0])
         body += f" Je pourrai ainsi mettre à profit {lst} dès mon arrivée et contribuer rapidement aux missions de votre équipe."
     else:
         body += " Je pourrai ainsi contribuer rapidement aux missions de votre équipe."
-    p3 = "Rigoureux, curieux et force de proposition, je serais heureux de vous présenter mes projets lors d'un entretien."
+    p3 = ("Je travaille couramment en anglais (C1) et je poursuis activement mon apprentissage du français. "
+          "Rigoureux, curieux et force de proposition, je serais heureux de vous présenter mes projets lors d'un entretien.")
     cl = {"name": "Rishikesh Sudheer", "contactLine": f"{CONTACT['location']} · {CONTACT['phone']} · {CONTACT['email']}", "date": "",
           "subject": f"Objet : Candidature — Stage {title}, {entity} {site} ({j['jobReqId']})", "salutation": "Madame, Monsieur,",
           "paragraphs": [p1, body, p3], "closing": "Sincèrement,"}
@@ -340,6 +341,9 @@ def build(req):
 def build_ext(specf):
     """Generic posting (any company): spec json {company, title, location, id, url, description, slug?}."""
     sp = json.load(open(specf, encoding="utf-8"))
+    # strip campaign prefixes such as "CS27 Bac+5 - Stage" so the subject line reads naturally
+    sp["title"] = re.sub(r"^\s*(CS\d+\s*[-–]?\s*)?(BAC\s*\+\s*\d\s*[-–]?\s*)?(Stage\s*[-–:]?\s*)?", "", sp["title"], flags=re.I).strip() or sp["title"]
+    sp["title"] = re.sub(r"\s*\(?[HF]\s*/\s*[HF]\)?\s*$", "", sp["title"]).strip()
     j = {"title": sp["title"], "location": sp["location"], "jobReqId": sp["id"], "jobDescription": html.escape(sp["description"]),
          "externalUrl": sp["url"], "company": sp["company"], "theme": sp.get("theme")}
     theme, sc, cv, cl = compose(j)

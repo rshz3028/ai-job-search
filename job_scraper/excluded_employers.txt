@@ -1,0 +1,26 @@
+# Employers never applied to (candidate rule 2026-11-13): defence / nuclear sites screen out
+# non-EU nationals (habilitation). One lowercase substring per line, matched on the company name.
+# next_job.py drops these; add a line instead of writing a note elsewhere.
+thales
+safran
+mbda
+naval group
+dassault
+knds
+nexter
+arquus
+arianegroup
+airbus defence
+sodern
+cilas
+photonis
+exail
+hgh
+framatome
+orano
+cea
+technicatome
+bertin
+serma
+idemia
+cs group

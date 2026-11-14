@@ -2,7 +2,7 @@
 
 Reads ranked entries from job_scraper/seen_jobs.json (never prints the whole
 file), drops ones already in job_search_tracker.csv (company + similar title,
-any channel), passed deadlines and fits below the threshold, then orders by
+any channel), employers listed in job_scraper/excluded_employers.txt, passed deadlines and fits below the threshold, then orders by
 deadline urgency (<= 7 days first) and score.
 
   python tools/next_job.py [--min-score 60] [--limit 5]
@@ -25,6 +25,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 SEEN = REPO / "job_scraper" / "seen_jobs.json"
 TRACKER = REPO / "job_search_tracker.csv"
+EXCLUDED = REPO / "job_scraper" / "excluded_employers.txt"
 LABELS = {"high": 80, "strong": 80, "medium": 65, "good": 65, "moderate": 50, "low": 40, "weak": 35}
 STOP = {"stage", "stagiaire", "intern", "internship", "hf", "fh", "mf", "fm", "de", "du", "la", "le",
         "des", "en", "et", "the", "and", "for", "of", "a", "un", "une", "pour", "ingenieur", "engineer"}
@@ -51,6 +52,18 @@ def score_of(entry: dict) -> float:
     return float(LABELS.get(str(entry.get("fit", "")).strip().lower(), 0))
 
 
+def excluded_terms(path: Path = EXCLUDED) -> list[str]:
+    if not path.exists():
+        return []
+    return [l.strip().lower() for l in path.read_text(encoding="utf-8").splitlines()
+            if l.strip() and not l.startswith("#")]
+
+
+def is_excluded(company: str, terms: list[str]) -> bool:
+    padded = " " + norm(company) + " "
+    return any(" " + norm(t).strip() + " " in padded for t in terms)
+
+
 def already_applied(entry: dict, tracker: list[dict]) -> bool:
     ck, tw = company_key(entry.get("company", "")), words(entry.get("title", ""))
     if len(ck) < 3:
@@ -72,10 +85,14 @@ def load(seen_path: Path = SEEN, tracker_path: Path = TRACKER):
     return seen, tracker
 
 
-def pick(seen: dict, tracker: list[dict], min_score: float, today: dt.date) -> list[dict]:
+def pick(seen: dict, tracker: list[dict], min_score: float, today: dt.date,
+         excluded: list[str] | None = None) -> list[dict]:
     out = []
+    excluded = excluded or []
     for key, e in seen.items():
         if e.get("status") != "ranked":
+            continue
+        if is_excluded(e.get("company", ""), excluded):
             continue
         s = score_of(e)
         if s < min_score:
@@ -108,7 +125,7 @@ def main(argv=None) -> int:
     ap.add_argument("--count", action="store_true")
     a = ap.parse_args(argv)
     seen, tracker = load()
-    jobs = pick(seen, tracker, a.min_score, dt.date.today())
+    jobs = pick(seen, tracker, a.min_score, dt.date.today(), excluded_terms())
     if a.count:
         print(json.dumps({"ready": len(jobs),
                           "unranked_new": sum(1 for e in seen.values() if e.get("status") == "new")}))
