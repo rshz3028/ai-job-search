@@ -2,7 +2,13 @@
 # non-EU nationals (habilitation). One lowercase substring per line, matched on the company name.
 # next_job.py drops these; add a line instead of writing a note elsewhere.
 thales
-safran
+# Safran: civil branches allowed (candidate 2026-11-18); defence branches stay excluded.
+safran electronics
+safran electronics & defense
+safran reosc
+safran vectronix
+safran data systems
+safran federal systems
 mbda
 naval group
 dassault
@@ -24,3 +30,20 @@ bertin
 serma
 idemia
 cs group
+collins aerospace
+worldgrid
+sdel contrôle commande
+sdel controle commande
+Elwave
+Airbus Defence and Space
+Airbus Defense and Space
+Ariane Group
+ArianeGroup
+Delair
+Couach
+Elwave
+HEMERIA
+KNDS France
+Helsing
+Harmattan AI
+Alta Ares

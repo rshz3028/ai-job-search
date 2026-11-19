@@ -16,18 +16,20 @@ The candidate can say "stop", "pause" or give a new limit at any time. That alwa
 1. Read `trackers/session_claims.md` and claim a line `autopilot | <session> | running (<date>)`. Never take a job from a site another session has claimed. Pick a different job instead.
 2. Rules that stay in force: deal-breakers in `CLAUDE.md`, skip/queue rules in `10-screening-answers.md` ("Unattended runs"), the project-module rules (`11-project-modules.md`, BMS left out), and the Verification Checklist for every CV and letter.
 
-## The loop
+## The loop (inline: no subagents, candidate 2026-11-16)
+Everything runs in this session, so keep every step to one compact call (`docs/apply_playbook.md` token rules): `tools/app.py` for documents and records, `ff.all` / `ff.state` / `ff.wait` instead of screenshots, one result line per job.
+
 Repeat:
 1. **Pick.** `python tools/next_job.py --limit 3` gives ranked jobs with score ≥ 60, not already in the tracker, not from an employer in `job_scraper/excluded_employers.txt`, and no passed deadline, urgent ones first. Take the first one that is not claimed by another session.
 2. **Refill when empty.** If it returns `[]`:
    - `python tools/next_job.py --count`. If `unranked_new` > 0, run `/rank --limit 10` (add `--focus` when given), then go back to step 1.
-   - If nothing is unranked, run `/scrape` once with the standard queries (and JobTeaser through Chrome), then `/rank`, then step 1.
+   - If nothing is unranked, run `/scrape` once with the standard queries (and JobTeaser / the `jb` board extractor through Chrome), then `/rank`, then step 1.
    - If a full scrape and rank still gives nothing ≥ 60, stop (see Stop conditions).
-3. **Apply.** Run the `/apply` workflow on the job's URL without pausing at its "present the evaluation" step. If `/apply`'s own evaluation scores it below 60 or hits a deal-breaker, mark it skipped in `seen_jobs.json` through `/rank`'s state helper, log the reason in one line, and go to step 1.
-4. **Submit.** Read the site's entry in `docs/site_quirks.md` first. Run `/submit` on the drafted application (auto-submit is authorized). If it needs an account, password, CAPTCHA, LinkedIn Easy Apply, or an answer not in the screening bank, queue it in `documents/manual_apply_queue.md`, leave the tab open, and go to step 1. Email-channel jobs go to `email_applications/<Company>_<role>/` (see memory) and count as queued, not submitted.
-5. **Record** in the tracker straight away (append-only, per `session_claims.md` rule 2), then continue at step 1.
+3. **Draft** with `docs/apply_playbook.md` A (ends in `python tools/app.py draft <spec.json>` → `DRAFTED ...`). On a skip, `python tools/seen.py skip ...` and go to step 1.
+4. **Submit** with playbook B, unless `draft` was given. Ends in `python tools/app.py done ...` (`SUBMITTED`) or `python tools/app.py queue ...` (`QUEUED`: login, CAPTCHA, Easy Apply, unknown question). Email-channel jobs go to `email_applications/<Company>_<role>/` and count as queued.
+5. **Log** the one result line, then continue at step 1. Do not re-read the documents or re-check the tracker: the tools recorded it.
 
-Every 5 applications, run `python tools/split_tracker.py` (it prints the counts; nothing is updated by hand) and print one status line (sent / queued / skipped so far). Then continue without waiting.
+Every 5 applications, run `python tools/split_tracker.py | tail -8` and print one status line (sent / queued / skipped so far). Then continue without waiting.
 
 ## Stop conditions (the only reasons to stop)
 - The candidate says stop or pause, or the given `N` / `until` limit is reached.

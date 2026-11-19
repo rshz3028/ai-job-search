@@ -37,7 +37,7 @@ SIDEBAR = {
     "hw": ("Électronique", ["KiCad, Proteus, PCB", "Électronique de puissance (SEPIC, MPPT)", "Oscilloscope, multimètre"]),
     "sw": ("Logiciel", ["C++, Python, C", "Git, GitLab CI, Docker", "OpenGL, Vulkan, SQL"]),
 }
-LANG = ("Langues", ["Anglais — Courant (C1)", "Français — Basique (A2)", "Hindi — B2", "Malayalam — Courant (C2)"])
+LANG = ("Langues", ["Anglais — Bilingue", "Français — Basique (A2)", "Hindi — B2", "Malayalam — Courant (C2)"])
 # Private contact details live in profile.local.json at the repo root (gitignored), so this file
 # can be published as is. Placeholders are used when the file is missing.
 _LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "profile.local.json")
@@ -89,7 +89,7 @@ THEMES = {
         "hook": "le logiciel embarqué au plus près du matériel, du firmware jusqu'à l'intégration sur cible",
         "evid": ["mcu", "innspark", "linux", "bbw_test"]},
     "nav_fusion": {
-        "kw": {r"gnss|inertiel|centrale inertielle|imu|filtre de navigation|navigation (temps|autonome|automatique)": 6, r"navigation": 1, r"kalman|fusion de|filtre de navigation|filtrage|estimation d": 6, r"capteur|sensor": 2, r"algorithm": 2, r"mod[ée]lisation|matlab|simulink": 4},
+        "kw": {r"gnss|inertiel|centrale inertielle|\bimu\b|filtre de navigation|navigation (temps|autonome|automatique)": 6, r"navigation": 1, r"kalman|fusion de|filtre de navigation|filtrage|estimation d": 6, r"capteur|sensor": 2, r"algorithm": 2, r"mod[ée]lisation|matlab|simulink": 4},
         "headline": "fusion de capteurs, Kalman & C++", "sidebar": ["algo", "emb", "linux", "sw"],
         "modules": ["Robotics & localization", "Embedded C", "Linux", "AI for Automotive"],
         "projects": ["imu-fusion", "imu-app", "ros-nav", "bbw-testbench"],
@@ -137,7 +137,7 @@ SUPPORTED = [(r"\bc\+\+", "C++"), (r"\bpython\b", "Python"), (r"\blangage c\b|\b
              (r"opencv", "OpenCV"), (r"pytorch", "PyTorch"), (r"kalman", "le filtrage de Kalman"), (r"ci/cd|int[ée]gration continue|gitlab", "l'intégration continue"),
              (r"uart|spi|i2c|i²c", "les liaisons série (UART, SPI, I²C)"), (r"yocto", "Yocto"), (r"kicad", "KiCad")]
 BANNED = [r"raspberry", r"canoe", r"vector\b", r"modbus", r"mqtt", r"labview", r"\blin\b", r"tcp/ip", r"doors", r"\bhil\b", r"a-spice", r"\bslam\b",
-          r"javascript", r"\brust\b", r"\bc#", r"iso 26262", r"\bbms\b", r"gestion de batterie", r"habilitation", r"nouveau pour moi", r"pas encore", r"je n'ai pas", r"débutant"]
+          r"javascript", r"\brust\b", r"\bc#", r"iso 26262", r"\bbms\b", r"gestion de batterie", r"habilitation", r"nouveau pour moi", r"pas encore", r"je n'ai pas", r"débutant", r"\(c1\)", r"(english|anglais)\W{0,5}(fluent|courant)?\W{0,5}\(?c1\b"]
 
 
 def norm(s):
@@ -161,7 +161,7 @@ def core(t):
 
 def clean_title(t):
     t = re.sub(r"^\s*stage\s*[-–—:]*\s*", "", t, flags=re.I); t = re.sub(r"\s*[-–(]*\s*(F\s*/\s*H|H\s*/\s*F|F\s*/\s*M)\s*\)?.*$", "", t, flags=re.I)
-    t = re.sub(r"de nos", "des", t); t = re.sub(r"nos", "les", t); t = re.sub(r"notre", "la", t)
+    t = re.sub(r"\bde nos\b", "des", t); t = re.sub(r"\bnos\b", "les", t); t = re.sub(r"\bnotre\b", "la", t)
     t = re.sub(r"\s+[–—]\s+", ", ", t)
     return t.strip(" -–—,")
 
@@ -261,15 +261,16 @@ def compose(j):
           "sidebar": [{"heading": SIDEBAR[k][0], "bullets": SIDEBAR[k][1]} for k in th["sidebar"]] + [{"heading": "Modules du Master", "bullets": th["modules"]}, {"heading": LANG[0], "lines": LANG[1]}],
           "sections": [{"heading": "Profil", "text": INTRO + " " + th["profile"]}, EDU, {"heading": "Expérience Professionnelle", "entries": [INNSPARK]},
                        {"heading": "Projets", "entries": [project(p) for p in th["projects"]]}]}
-    p1 = (f"Je vous adresse ma candidature pour le stage « {title} » chez {entity} à {site}. Ce sujet rejoint ce qui me motive le plus : {th['hook']}. "
+    p1 = (f"Je vous adresse ma candidature pour le stage « {title} » chez {entity} à {site}. Ce sujet rejoint ce qui me motive le plus : {j.get('hook') or th['hook']}. "
           "Je suis étudiant en dernière année de Master Systèmes Embarqués Automobile à l'ESIGELEC et je suis disponible immédiatement pour un stage de six mois, sous convention de stage ESIGELEC.")
     body = " ".join(EVID[e] for e in th["evid"][:3])
+    if j.get("extra"): body += " " + j["extra"]
     if asked:
         lst = ", ".join(asked[:-1]) + (" et " + asked[-1] if len(asked) > 1 else asked[0])
         body += f" Je pourrai ainsi mettre à profit {lst} dès mon arrivée et contribuer rapidement aux missions de votre équipe."
     else:
         body += " Je pourrai ainsi contribuer rapidement aux missions de votre équipe."
-    p3 = ("Je travaille couramment en anglais (C1) et je poursuis activement mon apprentissage du français. "
+    p3 = (""
           "Rigoureux, curieux et force de proposition, je serais heureux de vous présenter mes projets lors d'un entretien.")
     cl = {"name": "Rishikesh Sudheer", "contactLine": f"{CONTACT['location']} · {CONTACT['phone']} · {CONTACT['email']}", "date": "",
           "subject": f"Objet : Candidature — Stage {title}, {entity} {site} ({j['jobReqId']})", "salutation": "Madame, Monsieur,",
@@ -343,9 +344,9 @@ def build_ext(specf):
     sp = json.load(open(specf, encoding="utf-8"))
     # strip campaign prefixes such as "CS27 Bac+5 - Stage" so the subject line reads naturally
     sp["title"] = re.sub(r"^\s*(CS\d+\s*[-–]?\s*)?(BAC\s*\+\s*\d\s*[-–]?\s*)?(Stage\s*[-–:]?\s*)?", "", sp["title"], flags=re.I).strip() or sp["title"]
-    sp["title"] = re.sub(r"\s*\(?[HF]\s*/\s*[HF]\)?\s*$", "", sp["title"]).strip()
+    sp["title"] = re.sub(r"\s*\(?\b[HF]\s*/\s*[HF]\)?\s*$", "", sp["title"]).strip()
     j = {"title": sp["title"], "location": sp["location"], "jobReqId": sp["id"], "jobDescription": html.escape(sp["description"]),
-         "externalUrl": sp["url"], "company": sp["company"], "theme": sp.get("theme")}
+         "externalUrl": sp["url"], "company": sp["company"], "theme": sp.get("theme"), "hook": sp.get("hook"), "extra": sp.get("extra")}
     theme, sc, cv, cl = compose(j)
     co = slugify(sp["company"], 20); base = sp.get("slug") or f"{co}_{slugify(sp['title'], 45)}"
     cvn, cln = f"main_{base}", f"cover_{base}"

@@ -36,6 +36,24 @@
       "dates_fr": "Févr. 2026 - Juil. 2026",
       "sub_en": "MSc project · DJI RoboMaster EP, ROS2",
       "sub_fr": "Projet de Master · DJI RoboMaster EP, ROS2"
+    },
+    "clipfarm": {
+      "name_en": "Agentic AI Video Pipeline",
+      "context_en": "Personal project",
+      "context_fr": "Projet personnel",
+      "dates": "Nov 2026",
+      "dates_fr": "Nov. 2026",
+      "sub_en": "Personal project · built with Claude Code",
+      "sub_fr": "Projet personnel · développé avec Claude Code"
+    },
+    "jobagents": {
+      "name_en": "Multi-Agent Automation System",
+      "context_en": "Personal project",
+      "context_fr": "Projet personnel",
+      "dates": "Nov 2026",
+      "dates_fr": "Nov. 2026",
+      "sub_en": "Personal project · Claude Code agents",
+      "sub_fr": "Projet personnel · agents Claude Code"
     }
   },
   "modules": [
@@ -243,6 +261,60 @@
       "text_fr": "Détection d'obstacles avec OpenCV et YOLOv8 sur le flux caméra d'un DJI RoboMaster EP, alimentant la navigation ROS2 du robot.",
       "tech_en": "OpenCV, YOLOv8, Python, ROS2",
       "tech_fr": "OpenCV, YOLOv8, Python, ROS2"
+    },
+    {
+      "id": "clipfarm-pipeline",
+      "parent": "clipfarm",
+      "fits": [
+        "AI",
+        "LLM",
+        "agentic",
+        "software",
+        "automation",
+        "data pipeline",
+        "Python",
+        "tooling",
+        "media",
+        "GenAI"
+      ],
+      "titles_en": [
+        "Agentic AI Video Pipeline — built with Claude Code",
+        "LLM-Driven Media Pipeline (Python)"
+      ],
+      "titles_fr": [
+        "Pipeline vidéo IA agentique — développé avec Claude Code",
+        "Pipeline média piloté par LLM (Python)"
+      ],
+      "text_en": "Automated pipeline turning archival film into narrated short videos, designed and built through agentic coding with Claude Code: ten swappable stages with file contracts and incremental re-runs, Claude API calls for scoring and scripting, faster-whisper transcription, Kokoro ONNX speech, FFmpeg NVENC rendering on a 4 GB GPU, SQLite registry and human approval before publishing.",
+      "text_fr": "Pipeline automatisé transformant des films d'archives en vidéos courtes narrées, conçu et développé en codage agentique avec Claude Code : dix étapes interchangeables à contrats de fichiers et ré-exécution incrémentale, appels à l'API Claude, transcription faster-whisper, synthèse vocale Kokoro ONNX, rendu FFmpeg NVENC sur GPU 4 Go, registre SQLite et validation humaine avant publication.",
+      "tech_en": "Claude Code, Claude API, Python, faster-whisper, ONNX, FFmpeg, SQLite, Pytest",
+      "tech_fr": "Claude Code, Claude API, Python, faster-whisper, ONNX, FFmpeg, SQLite, Pytest"
+    },
+    {
+      "id": "jobagents-multiagent",
+      "parent": "jobagents",
+      "fits": [
+        "AI",
+        "LLM",
+        "agentic",
+        "multi-agent",
+        "automation",
+        "software",
+        "tooling",
+        "test automation"
+      ],
+      "titles_en": [
+        "Multi-Agent Workflow with Claude Code",
+        "Agentic Automation System"
+      ],
+      "titles_fr": [
+        "Workflow multi-agents avec Claude Code",
+        "Système d'automatisation agentique"
+      ],
+      "text_en": "Multi-agent Claude Code workflow with separate agents for drafting, submission and inbox checking, custom skills and hooks, browser automation, JSON-to-PDF document builds with automated checks, and Python tracker tooling.",
+      "text_fr": "Workflow multi-agents sous Claude Code, avec des agents distincts (rédaction, envoi, suivi de boîte mail), skills et hooks personnalisés, automatisation de navigateur, génération JSON vers PDF avec contrôles automatiques et outillage Python.",
+      "tech_en": "Claude Code, Python, browser automation, Git",
+      "tech_fr": "Claude Code, Python, browser automation, Git"
     }
   ]
 }
