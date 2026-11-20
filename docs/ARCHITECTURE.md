@@ -78,7 +78,7 @@ flowchart TB
     subgraph L4["4 · Deterministic tools (tools/)"]
         direction LR
         t_state["scrape_state.py<br/>rank_state.py<br/>job_key.py"]
-        t_pick["next_job.py"]
+        t_pick["pipeline.py next"]
         t_doc["autodoc.py<br/>parttime_cv.py"]
         t_ver["verify_pdf.py<br/>verify_layout.py"]
         t_sec["posting_guard.py<br/>fetch_page.py<br/>robots_check.py<br/>security_guards.py"]
@@ -115,7 +115,7 @@ flowchart TB
 |---|---|
 | `seen_jobs.json` grows forever; re-reading it costs context on every run | `scrape_state.py`, `rank_state.py` project only the fields needed and write back atomically |
 | The same job stored twice under slightly different keys | `job_key.py`: a pure, length-capped, hash-disambiguated key |
-| Choosing the next job inconsistently, or re-applying | `next_job.py`: drops tracked jobs, excluded employers and passed deadlines, sorts by urgency then score |
+| Choosing the next job inconsistently, or re-applying | `pipeline.py next`: drops tracked jobs, excluded employers and passed deadlines, sorts by urgency then score |
 | A CV that "looks" one page but clips a row or loses its text layer | `verify_pdf.py`, `verify_layout.py` |
 | Hidden prompt-injection text in a posting | `posting_guard.py` |
 | Permission widening or weakened `.gitignore` slipping into a PR | `security_guards.py` (CI) |
@@ -212,7 +212,7 @@ stateDiagram-v2
     unreachable --> [*] : retries exhausted, reported as gave_up
     ranked --> expired : deadline passed (rank_state.py sweep)
     ranked --> skipped : /apply evaluation below 60
-    ranked --> [*] : picked by next_job.py and tracked
+    ranked --> [*] : picked by pipeline.py next and tracked
     skipped --> [*]
     expired --> [*]
 ```
@@ -318,7 +318,7 @@ flowchart LR
     subgraph gates["Deterministic gates"]
         pg["posting_guard.py<br/>strips hidden HTML, zero-width<br/>and tag characters, flags<br/>injection patterns"]
         fp["fetch_page.py<br/>GET only, http(s) only,<br/>robots.txt enforced,<br/>size + time bounded,<br/>never writes into the repo"]
-        ex["excluded_employers.txt<br/>+ next_job.py filter"]
+        ex["excluded_employers.txt<br/>+ pipeline.py next filter"]
     end
 
     model["Claude Code<br/>(evaluates, drafts)"]
@@ -384,7 +384,7 @@ python tools/lint_skills.py
 
 | Tool | Purpose | Typical call |
 |---|---|---|
-| `tools/next_job.py` | Next best-fit job: ranked, score ≥ 60, not tracked, not excluded, deadline first | `python tools/next_job.py --limit 3` / `--count` |
+| `tools/pipeline.py` | The pipeline entry point: find, bulk, rank, next, mark, sync, status (docs/PIPELINE.md) | `python tools/pipeline.py next` |
 | `tools/scrape_state.py` | Dedup search hits against history and tracker, store atomically | `candidates`, `store` |
 | `tools/rank_state.py` | Select jobs for scoring, expiry sweep, write scores back | `candidates`, `sweep`, `apply` |
 | `tools/job_key.py` | Canonical dedup key, audit and migrate old keys | `--audit [--migrate]` |
@@ -398,7 +398,7 @@ python tools/lint_skills.py
 | `tools/split_tracker.py` | Normalise `role_type`, write `trackers/*.csv`, print counts | `python tools/split_tracker.py` |
 | `tools/publish_results.py` | Public `results/*.csv` + README summary table | `python tools/publish_results.py [--check]` |
 | `tools/security_guards.py` | Supply-chain and privacy guards (CI) | `python tools/security_guards.py` |
-| `tools/workday_thales.js` | In-page helper for Workday application forms | loaded in the browser per the playbook |
+| `tools/bulk/` | Bulk employer sources (one careers API -> jobs.db) + per-employer form helper and playbook | `python tools/pipeline.py bulk <name>` |
 
 ---
 

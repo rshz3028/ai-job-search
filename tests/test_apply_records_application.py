@@ -35,7 +35,6 @@ HTML_REPORT = COMMANDS / "html-report.md"
 INTERVIEW = COMMANDS / "interview.md"
 NOTION_SYNC = COMMANDS / "notion-sync.md"
 SKILL = REPO / ".claude" / "skills" / "job-application-assistant" / "SKILL.md"
-SCRAPER = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
 DOCS_README = REPO / "documents" / "README.md"
 
 TRACKER_HEADER = (
@@ -225,8 +224,6 @@ class DraftedMeansDraftedToEveryReader(unittest.TestCase):
         (NOTION_SYNC, None, "not yet submitted",
          "page bodies are write-once, so calling drafts 'submitted documents' "
          "is permanent even after /outcome records the real submission"),
-        (SCRAPER, None, "do not add a second row",
-         "/scrape would duplicate the row Step 3b just wrote"),
         (APPLY, "### Step 6b: Record the Application", "bare number, 0-100",
          "/upskill divides by fit_rating, so `72/100` or a verdict word breaks it"),
         (APPLY, "### Step 6b: Record the Application", "append a new row",

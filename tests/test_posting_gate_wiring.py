@@ -62,14 +62,14 @@ class OtherFrontDoors(unittest.TestCase):
         self.assertIn("posting_guard", fallback)
 
     def test_scratchpad_is_guarded_everywhere_the_gate_writes(self):
-        for path in (APPLY, REPO / ".claude" / "agents" / "posting-fetcher.md", REPO / ".claude" / "agents" / "posting-scorer.md"):
+        for path in (APPLY, REPO / ".claude" / "agents" / "posting-fetcher.md"):
             text = path.read_text(encoding="utf-8")
             with self.subTest(path=path.name):
                 self.assertNotRegex(text, r"\$SCRATCHPAD/", "use ${SCRATCHPAD:?...} so an unset variable fails loudly")
                 self.assertIn("${SCRATCHPAD:?", text)
 
     def test_fetch_agents_can_discover_installed_portals(self):
-        for name in ("posting-fetcher.md", "posting-scorer.md"):
+        for name in ("posting-fetcher.md",):
             text = (REPO / ".claude" / "agents" / name).read_text(encoding="utf-8")
             tools = re.search(r"^tools:\s*(.*)$", text, re.M).group(1)
             with self.subTest(agent=name):

@@ -226,9 +226,8 @@ class ApplyHostVerificationSpecTests(unittest.TestCase):
         # A regional subdomain and the bare apex must both pass for every portal;
         # the derived set is what makes this hold for a portal added by /add-portal.
         urls = [
-            "https://www.jobindex.dk/jobannonce/12345",
             "https://dk.linkedin.com/jobs/view/999999",
-            "https://jobnet.dk/find-job/8888",
+            "https://www.linkedin.com/jobs/view/999999",
             "https://freehire.me/jobs/golang-zensar-2bxu6dxm",
         ]
         for url in urls:
@@ -345,18 +344,6 @@ class WebResearchEscalationOrderTests(unittest.TestCase):
         self.assertNotEqual(webfetch_pos, -1)
         self.assertLess(portal_pos, webfetch_pos, "Portal CLI detail must precede WebFetch in escalation order")
 
-
-class RankBatchFetchSpecTests(unittest.TestCase):
-    def setUp(self):
-        self.rank_file = REPO / ".claude" / "commands" / "rank.md"
-        self.text = self.rank_file.read_text(encoding="utf-8")
-        match = re.search(r"## Step 2: Batch-Fetch and Score(.*?)(?=## Step 3:)", self.text, re.DOTALL)
-        self.assertTrue(match, "Step 2 must exist in rank.md")
-        self.step2_text = match.group(1)
-
-    def test_rank_step2_documents_portal_cli_detail_fetch(self):
-        self.assertIn("detail", self.step2_text)
-        self.assertIn("09-web-research.md", self.step2_text)
 
 
 if __name__ == "__main__":

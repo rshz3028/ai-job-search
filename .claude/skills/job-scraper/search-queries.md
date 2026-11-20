@@ -12,108 +12,98 @@ The `site:` query templates in this file are the **WebSearch fallback** — for 
 
 ## Search Sites
 
-Primary (your market's job boards - scaffold one with `/add-portal`):
-- **[YOUR_JOB_BOARD]** - your market's largest general job board
-- **linkedin.com/jobs** - LinkedIn job listings (filter: [YOUR_COUNTRY] / [YOUR_CITY]); also covered by `linkedin-search` CLI
-- **[YOUR_INDUSTRY_JOB_BOARD]** - a niche/industry board for your field (optional)
-- **[YOUR_ADDITIONAL_JOB_BOARD]** - another major board for your market (optional)
+Market: **France** (internships / stages, 4-6 months, on-site). Languages: write queries in **English and French**.
+
+Primary:
+- **linkedin.com/jobs** - `linkedin-search` CLI (location: France / Île-de-France)
+- **welcometothejungle.com** - major French tech/startup board (WebSearch fallback until a CLI is added with `/add-portal`)
+- **hellowork.com** - large French general board
+- **fr.indeed.com** - Indeed France
+- **apec.fr** - engineering/cadre roles (mostly jobs, some internships)
+- **jobteaser.com** - school-linked internships (ESIGELEC portal, esigelec.jobteaser.com). `jobteaser-search` skill, run in logged-in Chrome (`runner: chrome`). Use French queries: systèmes embarqués, logiciel embarqué, linux embarqué, validation embarqué, électronique de puissance, firmware
 
 Secondary (company career pages via Google):
-- Direct Google searches with `site:` filters for known target companies
+- Valeo, NXP, Stellantis, Safran, Thales, Parrot, Sagemcom, Schneider Electric, EDF, Socomec, Expleo, Renault/Ampere, Forvia, Continental, Bosch France, Alstom, Nexans, Legrand, Saft, Verkor, Hager
 
 ## Query Categories
 
-Queries are grouped by priority. Write **each category in every language from your Languages table** (see Language scope above). Combine each query with your location terms (e.g. your city, region, or metro area) where the site supports it.
+All queries target internships: add `stage` / `stagiaire` / `internship` / `stage de fin d'études` / `PFE` to each.
 
-Each priority has two kinds of block. **Plain terms** blocks are what the portal CLIs consume: one term per line, one CLI call per term, no `OR`, no `site:` prefix, and no location (the CLI's location flag, or the city in `--query` where that portal's SKILL.md says so, carries it). Quote a multi-word phrase only if the portal's `Query syntax:` line says quoting is honoured. **WebSearch-only** blocks are Google syntax (`site:`, quotes, `OR`) for the fallback path and are never passed to a CLI.
-
-**Organize by function, not job title.** The same underlying work carries different titles across companies and markets (a "Data Scientist" role at one employer may be posted as "Insights Analyst" or "Data Consultant" at another). Name each priority category after the function it covers, and list several plausible job titles as query variants within that category rather than betting an entire priority tier on one exact title string.
-
-### Priority 1: [YOUR_PRIMARY_ROLE_TYPE]
-
-These match your strongest and most desired career direction.
-
-#### Plain terms (portal CLIs)
+### Priority 1: Embedded systems / firmware
 
 ```
-[YOUR_PRIMARY_JOB_TITLE_1]
-[YOUR_PRIMARY_JOB_TITLE_2]
-[YOUR_KEY_SKILL]
+site:welcometothejungle.com stage "systèmes embarqués" OR "logiciel embarqué"
+site:linkedin.com/jobs "embedded software intern" France
+site:linkedin.com/jobs "stage logiciel embarqué" Île-de-France
+site:hellowork.com stage "ingénieur systèmes embarqués"
+site:fr.indeed.com stage "firmware" "STM32" OR "C embarqué"
+site:welcometothejungle.com internship "embedded" "C/C++"
 ```
 
-#### WebSearch-only (`site:` fallback)
+Title variants: Embedded Software Intern, Firmware Engineer Intern, Stagiaire Ingénieur Logiciel Embarqué, Stage Systèmes Embarqués, Stage Électronique Embarquée, Embedded Systems Intern (Automotive), Stage Intégration Capteurs.
+
+### Priority 2: Test & validation
 
 ```
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_PRIMARY_JOB_TITLE_2]" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_KEY_SKILL]" [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE_1]" [YOUR_COUNTRY]
+site:linkedin.com/jobs "stage validation" "systèmes embarqués" France
+site:welcometothejungle.com stage "test et validation" embarqué
+site:hellowork.com stage "ingénieur validation" électronique
+site:fr.indeed.com stage "banc de test" OR "test automatisé" embarqué
+site:linkedin.com/jobs "validation engineer intern" automotive France
 ```
 
-### Priority 2: [YOUR_DOMAIN_EXPERTISE]
+Title variants: Stage Ingénieur Test et Validation, Stage V&V, Validation Engineer Intern, Stage Ingénieur Essais, Test Automation Intern (embedded), Stage Validation Système.
 
-These match your domain expertise.
-
-#### Plain terms (portal CLIs)
+### Priority 2b: EMC / CEM (candidate interest, 2026-11-14)
 
 ```
-[YOUR_DOMAIN_KEYWORD_1]
-[YOUR_DOMAIN_KEYWORD_2]
+site:linkedin.com/jobs stage "CEM" OR "compatibilité électromagnétique" France
+site:linkedin.com/jobs "EMC intern" OR "EMC internship" France
+site:hellowork.com stage "compatibilité électromagnétique"
+site:welcometothejungle.com stage "CEM" électronique
 ```
 
-#### WebSearch-only (`site:` fallback)
+Title variants: Stage Ingénieur CEM, Stage Compatibilité Électromagnétique, EMC Test Engineer Intern, Stage Essais CEM, Stage Simulation CEM. Skip defence/nuclear labs and anything requiring habilitation (rule 2).
+
+### Priority 3: Energy (with embedded in support)
 
 ```
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] OR [YOUR_REGION]
-site:[YOUR_JOB_BOARD] [YOUR_DOMAIN_KEYWORD_2] [YOUR_COUNTRY]
-site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] [YOUR_COUNTRY]
+site:linkedin.com/jobs stage "électronique de puissance" France
+site:welcometothejungle.com stage énergie "embarqué" OR "BMS" OR "convertisseur"
+site:hellowork.com stage "réseaux électriques" OR "smart grid" ingénieur
+site:fr.indeed.com stage "BMS" OR "MPPT" OR "borne de recharge"
+site:linkedin.com/jobs "power electronics intern" France
 ```
 
-### Priority 3: [YOUR_ADJACENT_ROLE_TYPE]
+Title variants: Stage Électronique de Puissance, Stage BMS, Stage Énergie / Smart Grid, Stage Recharge Véhicule Électrique, Stage Contrôle-Commande, Power Electronics Intern.
 
-Adjacent roles you could pivot into.
-
-#### Plain terms (portal CLIs)
+### Priority 4: Embedded Linux
 
 ```
-[YOUR_ADJACENT_TITLE_1]
-[YOUR_ADJACENT_TITLE_2]
+site:linkedin.com/jobs stage "Linux embarqué" OR "Yocto" France
+site:welcometothejungle.com stage "Linux embarqué"
+site:fr.indeed.com stage "Yocto" OR "BSP" OR "drivers Linux"
 ```
 
-#### WebSearch-only (`site:` fallback)
+Title variants: Stage Linux Embarqué, Embedded Linux Intern, Stage BSP / Drivers, Stage Yocto.
 
-```
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_1]" [YOUR_KEY_SKILL] [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "[YOUR_ADJACENT_TITLE_2]" [YOUR_KEY_SKILL] [YOUR_CITY]
-```
-
-### Priority 4: Broader Technical / Consulting
-
-Wider net for general technical roles.
-
-#### Plain terms (portal CLIs)
-
-```
-[YOUR_KEY_SKILL] developer
-technical consultant
-```
-
-#### WebSearch-only (`site:` fallback)
-
-```
-site:[YOUR_JOB_BOARD] [YOUR_KEY_SKILL] developer [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_KEY_SKILL] developer" [YOUR_CITY]
-site:[YOUR_JOB_BOARD] "technical consultant" [YOUR_DOMAIN] [YOUR_CITY]
-```
+### Also consider (adjacent, suggested)
+- Sensor fusion / perception / robotics internships (ROS2, Kalman, OpenCV) - strong project evidence
+- Hardware/electronics design internships (KiCad, prototyping)
+- Automotive diagnostics (CAN/OBD/UDS) internships
 
 ## Location Filter
 
-When evaluating results, verify the job location is within reasonable commute distance from your home. Define acceptable areas:
-- [YOUR_CITY] and surrounding areas
-- [ACCEPTABLE_AREA_1]
-- [ACCEPTABLE_AREA_2]
-- [BORDERLINE_AREA] (borderline - ~X min by transit)
-- [TOO_FAR_AREA] (too far)
+Home: Neuilly-Plaisance (93), east Paris suburbs. Relocation within France is acceptable.
+- **Ideal:** Paris and Île-de-France (Paris, Saclay, Vélizy, Guyancourt, Massy, Cergy, Marne-la-Vallée, Créteil, Bobigny, Poissy)
+- **Acceptable:** anywhere else in France (Toulouse, Grenoble, Lyon, Rouen, Orléans, Rennes, Sophia-Antipolis, Alsace, Annemasse)
+- **Borderline (FLAG):** outside France (Switzerland, Belgium, Germany, Netherlands, Sweden) - separate permit needed
+- **Exclude:** fully remote internships
+
+**Contract filter:** internships (stage / stage de fin d'études) only. Drop CDI, CDD, alternance, VIE.
+**Clearance filter:** drop postings mentioning « habilitation », « secret de la défense nationale », « IGI 1300 » or nationality requirements.
+
+**Pay filter:** exclude internships stating < 600 EUR/month. Unstated pay: include and note.
 
 ## Language Filter
 
@@ -121,7 +111,7 @@ Your working languages and levels are in CLAUDE.md's Languages table. When filte
 
 ## Date Filter
 
-Only include jobs posted within the last 14 days, matching `/scrape` Step 1b.3: use a supported recency filter or filter the returned publication dates client-side. A future application deadline does not bypass this discovery window; `/rank` handles deadline expiry and urgency separately after discovery. If a posting date cannot be determined, include it but flag as "date unknown".
+Only include jobs posted within the last 14 days, or with an application deadline that has not yet passed. If a posting date cannot be determined, include it but flag as "date unknown".
 
 ## Adapting Queries
 

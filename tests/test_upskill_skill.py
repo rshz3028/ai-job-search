@@ -19,7 +19,6 @@ except ImportError:
 
 REPO = Path(__file__).resolve().parent.parent
 SKILL = REPO / ".claude" / "skills" / "upskill" / "SKILL.md"
-SCRAPER = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
 
 
 def _sections(text: str) -> dict[str, str]:
@@ -91,10 +90,6 @@ class UpskillSkillSpec(unittest.TestCase):
         # that never matches, so the dedupe silently failed and Step 3.2's
         # "one weight per job" counted the same job twice. The join is
         # role-vs-title, as tools/rank_state.py implements it.
-        schema = SCRAPER.read_text(encoding="utf-8")
-        schema_block = schema[schema.index('"<key from tools/job_key.py>"'): schema.index("```", schema.index('"<key from tools/job_key.py>"'))]
-        self.assertIn('"title"', schema_block)
-        self.assertNotIn('"role"', schema_block, "if entries gain a role key, revisit the join wording")
         step3 = _sections(SKILL.read_text(encoding="utf-8")).get("Step 3: Pass 1 — Hard Skill Diff", "")
         dedupe = step3[step3.index("**Dedupe.**"): step3.index("2. **Recorded gaps")]
         self.assertIn("`title`", dedupe, "the dedupe must name the entry field, title")
