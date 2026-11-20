@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import jobsdb  # noqa: E402
 import seen  # noqa: E402
 import tracks  # noqa: E402
-from tracks.common import fetch_description  # noqa: E402
+from tracks.common import GUARD_MARK, fetch_description  # noqa: E402
 
 
 def main(argv: list[str]) -> int:
@@ -60,7 +60,10 @@ def main(argv: list[str]) -> int:
     for r, body in zip(need, bodies):
         if body and not r["description"]:
             con.execute("UPDATE postings SET description=? WHERE id=?", (body, r["id"]))
-        pre[r["id"]] = tr.decide(r, body, lk, min_score)
+        st, sc, hits, flags, reason = tr.decide(r, body, lk, min_score)
+        if body.startswith(GUARD_MARK):  # hidden or instruction-like text: read with care
+            flags = ",".join(f for f in ("guard", flags) if f)
+        pre[r["id"]] = (st, sc, hits, flags, reason)
     counts: dict[str, int] = {}
     for pid, (st, sc, hits, flags, reason) in pre.items():
         con.execute("UPDATE postings SET stage=?, score=?, hits=?, flags=?, reason=?, updated=? WHERE id=?",

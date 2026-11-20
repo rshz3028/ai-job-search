@@ -1,8 +1,10 @@
-"""Helpers shared by every track: fold text, fetch a posting description (LinkedIn detail cache or the page)."""
+"""Helpers shared by every track: fold text, fetch a posting description (LinkedIn detail cache or the page).
+
+Every description passes posting_guard before it is stored or read: hidden blocks, invisible characters and
+mixed-script words are removed, and a posting with instruction-like text starts with a GUARD_MARK line.
+"""
 from __future__ import annotations
 
-import html
-import re
 import shutil
 import subprocess
 import sys
@@ -10,7 +12,9 @@ import urllib.request
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import posting_guard  # noqa: E402
 import seen  # noqa: E402
+from page_decode import decode_page  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 CACHE = ROOT / "job_scraper" / "postings"
@@ -43,19 +47,38 @@ def linkedin_detail(jid: str) -> str:
     return txt
 
 
-def _strip(markup: str) -> str:
-    markup = re.sub(r"(?is)<(script|style|noscript)\b.*?</\1>", " ", markup)
-    return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", markup))).strip()
+GUARD_MARK = "⚠ posting_guard:"
+
+
+def guard_text(raw: str, mode: str = "auto") -> tuple[str, str]:
+    """Clean untrusted posting text. Returns (text, alarm); alarm is "" when clean.
+
+    A text that already starts with GUARD_MARK keeps that alarm, so re-guarding a stored description never
+    loses a warning found while the raw page (with its hidden HTML) was still available."""
+    prior = ""
+    if raw.startswith(GUARD_MARK):
+        prior, _, raw = raw.partition("\n")
+        prior = prior[len(GUARD_MARK):].strip()
+    text, findings = posting_guard.guard(raw, mode)
+    v = findings["verdict"]
+    alarm = v.split("⚠", 1)[1].strip() if "⚠" in v else ""
+    return text, "; ".join(a for a in (prior, alarm) if a)
+
+
+def guarded(raw: str, mode: str = "auto") -> str:
+    """guard_text() as one string: the cleaned text, preceded by a GUARD_MARK line when it alarmed."""
+    text, alarm = guard_text(raw, mode)
+    return f"{GUARD_MARK} {alarm}\n{text}" if alarm and text else text
 
 
 def fetch_description(row) -> str:
     try:
         if row["portal_id"] and (row["portal"] == "linkedin" or (row["key"] or "").startswith("linkedin:")):
-            return linkedin_detail(row["portal_id"])
+            return guarded(linkedin_detail(row["portal_id"]), "text")
         if (row["url"] or "").startswith("http"):
             req = urllib.request.Request(row["url"], headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=25) as r:
-                text = _strip(r.read(2_000_000).decode("utf-8", "replace"))
+                text = guarded(decode_page(r.read(2_000_000)), "html")
             return text[:20000] if len(text) > 300 else ""
     except Exception:
         return ""

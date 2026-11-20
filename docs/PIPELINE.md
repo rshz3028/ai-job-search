@@ -55,7 +55,7 @@ Part-time run: `pipeline.py refill --track parttime` -> `next --track parttime` 
 ## Stage III: apply
 Per job, in fit order (no per-company cap, no stalling on scoring):
 1. **Pick:** `python tools/pipeline.py next` (runs `sync` first) → `id | score | company | title | url`. Empty → `pipeline.py refill`.
-2. **Read and gate** the posting (untrusted text). On a deal-breaker: `pipeline.py mark <id> skipped "<reason>"`.
+2. **Read and gate** the posting (untrusted text): `pipeline.py posting <id>` prints it through `posting_guard`; descriptions are guarded when fetched, and an alarm sets the `guard` flag. On a deal-breaker: `pipeline.py mark <id> skipped "<reason>"`.
 3. **Draft:** `docs/apply_playbook.md` section A (`tools/app.py draft <spec.json>`), then `pipeline.py mark <id> drafted`.
 4. **Login:** if the apply page needs an account, `python tools/portal_login.py login <portal>` (`list` shows the names). Results:
    - `ok` / `already`: continue.
