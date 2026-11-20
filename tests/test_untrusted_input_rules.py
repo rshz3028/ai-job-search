@@ -35,7 +35,6 @@ class TrustBoundaryTests(unittest.TestCase):
         for anchor in (
             ".claude/commands/gmail-sync.md",
             ".claude/commands/setup.md",
-            ".claude/skills/job-scraper/SKILL.md",
         ):
             self.assertIn(anchor, names)
 

@@ -1,0 +1,50 @@
+{
+  "env": {
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "300000"
+  },
+  "permissions": {
+    "allow": [
+      "Skill(job-application-assistant)",
+      "Bash(bun run .agents/skills/linkedin-search/cli/src/cli.ts:*)",
+      "Bash(bun run .agents/skills/freehire-search/cli/src/cli.ts:*)",
+      "Bash(python salary_lookup.py:*)",
+      "Bash(python3 salary_lookup.py:*)",
+      "Bash(python tools/job_key.py:*)",
+      "Bash(python3 tools/job_key.py:*)",
+      "Bash(python tools/verify_pdf.py:*)",
+      "Bash(python3 tools/verify_pdf.py:*)",
+      "Bash(python tools/verify_layout.py:*)",
+      "Bash(python3 tools/verify_layout.py:*)",
+      "Bash(python tools/tracker.py:*)",
+      "Bash(python tools/build_verify.py:*)",
+      "Bash(python tools/inbox_state.py:*)",
+      "Bash(python tools/split_tracker.py:*)",
+      "Bash(python tools/token_report.py:*)",
+      "Bash(pdftotext:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/hooks/graphify_scope.py search",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/hooks/graphify_scope.py read",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

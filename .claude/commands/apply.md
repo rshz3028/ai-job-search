@@ -1,5 +1,7 @@
 # /apply - Drafter-Reviewer Job Application Workflow
 
+> **This workspace:** the default drafting path is the lean `docs/apply_playbook.md` (rishi-sidebar JSON + `tools/build_verify.py`), which `/autopilot` runs in the `applicant` agent. This long upstream workflow (LaTeX, reviewer agent) applies only when the candidate invokes `/apply` by name.
+
 You are orchestrating a two-agent job application workflow. The job posting is provided below as `$ARGUMENTS` (either a URL or pasted text).
 
 Follow these steps **exactly in order**. Do not skip steps.

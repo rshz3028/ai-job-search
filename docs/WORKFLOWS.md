@@ -11,7 +11,7 @@ flowchart LR
     start(["Session start"]) --> inbox["Check both work inboxes<br/>(Primary, Updates, Promotions)"]
     inbox --> scrape["/scrape<br/>LinkedIn CLI, JobTeaser,<br/>HelloWork, freehire"]
     scrape --> rank["/rank<br/>posting-scorer sub-agents<br/>score 0-100"]
-    rank --> pick["next_job.py<br/>best fit first"]
+    rank --> pick["pipeline.py next<br/>best fit first"]
     pick --> apply["/apply<br/>evaluate, draft,<br/>review, build, verify"]
     apply --> submit["/submit<br/>email or web form"]
     submit --> record["Record<br/>tracker row +<br/>submission.md"]
@@ -29,10 +29,10 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A(["/autopilot [N | until HH:MM | focus | draft]"]) --> P["next_job.py --limit 3"]
+    A(["/autopilot [N | until HH:MM | focus | draft]"]) --> P["pipeline.py next --limit 3"]
     P --> Q{"Any job ≥ 60<br/>not claimed by<br/>another session?"}
     Q -- yes --> AP["/apply on the job URL<br/>(no pause at evaluation)"]
-    Q -- no --> C["next_job.py --count"]
+    Q -- no --> C["pipeline.py next --count"]
     C --> U{"unranked_new > 0?"}
     U -- yes --> R["/rank --limit 10"] --> P
     U -- no --> S{"Already scraped<br/>this run?"}
@@ -54,7 +54,7 @@ flowchart TD
     LIM -- yes --> STOP2(["Stop and report"])
 ```
 
-**Selection rules in `next_job.py`:** status `ranked`, score ≥ 60, not already in the tracker (company plus a similar title, on any channel), employer not in `excluded_employers.txt`, deadline not passed. Jobs closing within 7 days come first, then the rest by score.
+**Selection rules in `pipeline.py next`:** status `ranked`, score ≥ 60, not already in the tracker (company plus a similar title, on any channel), employer not in `excluded_employers.txt`, deadline not passed. Jobs closing within 7 days come first, then the rest by score.
 
 ---
 

@@ -1,26 +1,21 @@
-"""autodoc: template-driven CV + cover letter pipeline (no hand writing per job).
+"""autodoc: template-driven CV + cover letter (no hand writing per job), for any company.
 
 posting text -> theme scoring -> CV json + letter json (from grounded snippets only)
 -> docx/pdf build (rishi-sidebar / rishi-plain) -> automatic verification -> application folder.
 
 Usage
-  python tools/autodoc.py thales-fetch                 # refresh Thales France internship cache (Workday API)
-  python tools/autodoc.py thales-queue [--min 45]      # rank, filter (habilitation, already applied) -> queue
-  python tools/autodoc.py build <REQ> [<REQ> ...]      # build + verify docs for Thales reqs
-  python tools/autodoc.py build-next <N>               # build the next N queued reqs
-  python tools/autodoc.py build-ext <spec.json> ...    # any company: {company,title,location,id,url,description}
-  python tools/autodoc.py record <REQ> [fit]           # tracker row + submission.md after a confirmed submit
+  python tools/autodoc.py build-ext <spec.json> ...    # spec: {company,title,location,id,url,description[,theme,hook,extra,slug]}
+  python tools/autodoc.py build-db <id> ...            # a data/jobs.db posting (e.g. from `pipeline.py bulk`)
 
-All text comes from SNIPPETS below, which are grounded in documents/RISHIKESH_PROFILE_EXPORT.md and
-project_modules.json. Add a theme or snippet here; never write per-job claims by hand.
+Bulk employers (one ATS, hundreds of postings) are fetched by `pipeline.py bulk` (tools/bulk/); this file
+only writes the documents. All text comes from SNIPPETS below, which are grounded in
+documents/RISHIKESH_PROFILE_EXPORT.md and project_modules.json. Add a theme or snippet here; never write
+per-job claims by hand. build_verify.py reuses CONTACT, BANNED, norm, run and build_one.
 """
-import csv, html, json, os, re, shutil, subprocess, sys, unicodedata, urllib.request, concurrent.futures as cf, time
+import html, json, os, re, shutil, subprocess, sys, unicodedata
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CACHE = os.path.join(ROOT, "job_scraper", "thales")
 SKILL = os.path.join(ROOT, ".claude", "skills", "job-application-assistant")
-WD = "https://thales.wd3.myworkdayjobs.com/wday/cxs/thales/Careers"
-FACETS = {"workerSubType": ["47200b8529d910215e133a260a722492"], "locationCountry": ["54c5b6971ffb4bf0b116fe7651ec789a"]}
 
 # ---------------------------------------------------------------- grounded content
 MOD = {m["id"]: m for m in json.load(open(os.path.join(SKILL, "project_modules.json"), encoding="utf-8"))["modules"]}
@@ -37,7 +32,7 @@ SIDEBAR = {
     "hw": ("Électronique", ["KiCad, Proteus, PCB", "Électronique de puissance (SEPIC, MPPT)", "Oscilloscope, multimètre"]),
     "sw": ("Logiciel", ["C++, Python, C", "Git, GitLab CI, Docker", "OpenGL, Vulkan, SQL"]),
 }
-LANG = ("Langues", ["Anglais — Courant (C1)", "Français — Basique (A2)", "Hindi — B2", "Malayalam — Courant (C2)"])
+LANG = ("Langues", ["Anglais — Bilingue", "Français — Basique (A2)", "Hindi — B2", "Malayalam — Courant (C2)"])
 # Private contact details live in profile.local.json at the repo root (gitignored), so this file
 # can be published as is. Placeholders are used when the file is missing.
 _LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "profile.local.json")
@@ -46,7 +41,6 @@ CONTACT = {"phone": PRIVATE.get("phone", "<phone>"), "email": PRIVATE.get("email
            "location": PRIVATE.get("location", "<city>, France"),
            "linkedin": {"text": "linkedin.com/in/rishikesh-sudheer-31977522a", "url": "https://www.linkedin.com/in/rishikesh-sudheer-31977522a"},
            "github": {"text": "github.com/rshz3028", "url": "https://github.com/rshz3028"}}
-WORKDAY_ACCOUNT = PRIVATE.get("workday_account", "<account email>")
 EDU = {"heading": "Formation", "entries": [
     {"title": "Master en Systèmes Embarqués Automobile", "dates": "2025 - Présent", "sub": "ESIGELEC, Rouen, France · convention de stage fournie · R&D 20/20 (1er sur 11)"},
     {"title": "Bachelor of Technology, Electrical & Computer Engineering", "dates": "2021 - 2025", "sub": "Amrita Vishwa Vidyapeetham, Kollam, Inde"}]}
@@ -89,7 +83,7 @@ THEMES = {
         "hook": "le logiciel embarqué au plus près du matériel, du firmware jusqu'à l'intégration sur cible",
         "evid": ["mcu", "innspark", "linux", "bbw_test"]},
     "nav_fusion": {
-        "kw": {r"gnss|inertiel|centrale inertielle|imu|filtre de navigation|navigation (temps|autonome|automatique)": 6, r"navigation": 1, r"kalman|fusion de|filtre de navigation|filtrage|estimation d": 6, r"capteur|sensor": 2, r"algorithm": 2, r"mod[ée]lisation|matlab|simulink": 4},
+        "kw": {r"gnss|inertiel|centrale inertielle|\bimu\b|filtre de navigation|navigation (temps|autonome|automatique)": 6, r"navigation": 1, r"kalman|fusion de|filtre de navigation|filtrage|estimation d": 6, r"capteur|sensor": 2, r"algorithm": 2, r"mod[ée]lisation|matlab|simulink": 4},
         "headline": "fusion de capteurs, Kalman & C++", "sidebar": ["algo", "emb", "linux", "sw"],
         "modules": ["Robotics & localization", "Embedded C", "Linux", "AI for Automotive"],
         "projects": ["imu-fusion", "imu-app", "ros-nav", "bbw-testbench"],
@@ -137,7 +131,7 @@ SUPPORTED = [(r"\bc\+\+", "C++"), (r"\bpython\b", "Python"), (r"\blangage c\b|\b
              (r"opencv", "OpenCV"), (r"pytorch", "PyTorch"), (r"kalman", "le filtrage de Kalman"), (r"ci/cd|int[ée]gration continue|gitlab", "l'intégration continue"),
              (r"uart|spi|i2c|i²c", "les liaisons série (UART, SPI, I²C)"), (r"yocto", "Yocto"), (r"kicad", "KiCad")]
 BANNED = [r"raspberry", r"canoe", r"vector\b", r"modbus", r"mqtt", r"labview", r"\blin\b", r"tcp/ip", r"doors", r"\bhil\b", r"a-spice", r"\bslam\b",
-          r"javascript", r"\brust\b", r"\bc#", r"iso 26262", r"\bbms\b", r"gestion de batterie", r"habilitation", r"nouveau pour moi", r"pas encore", r"je n'ai pas", r"débutant"]
+          r"javascript", r"\brust\b", r"\bc#", r"iso 26262", r"\bbms\b", r"gestion de batterie", r"habilitation", r"nouveau pour moi", r"pas encore", r"je n'ai pas", r"débutant", r"\(c1\)", r"(english|anglais)\W{0,5}(fluent|courant)?\W{0,5}\(?c1\b"]
 
 
 def norm(s):
@@ -161,7 +155,7 @@ def core(t):
 
 def clean_title(t):
     t = re.sub(r"^\s*stage\s*[-–—:]*\s*", "", t, flags=re.I); t = re.sub(r"\s*[-–(]*\s*(F\s*/\s*H|H\s*/\s*F|F\s*/\s*M)\s*\)?.*$", "", t, flags=re.I)
-    t = re.sub(r"de nos", "des", t); t = re.sub(r"nos", "les", t); t = re.sub(r"notre", "la", t)
+    t = re.sub(r"\bde nos\b", "des", t); t = re.sub(r"\bnos\b", "les", t); t = re.sub(r"\bnotre\b", "la", t)
     t = re.sub(r"\s+[–—]\s+", ", ", t)
     return t.strip(" -–—,")
 
@@ -170,75 +164,9 @@ def is_french(t):
     return len(re.findall(r"\b(vous|les|des|et|pour|une|dans)\b", t.lower())) > len(re.findall(r"\b(you|the|and|for|with|our)\b", t.lower()))
 
 
-# ---------------------------------------------------------------- fetch / queue
-def http(url, body=None):
-    for a in range(4):
-        try:
-            r = urllib.request.Request(url, data=json.dumps(body).encode() if body else None, headers={"Content-Type": "application/json", "Accept": "application/json"})
-            return json.load(urllib.request.urlopen(r, timeout=30))
-        except Exception:
-            time.sleep(2 + 3 * a)
-    return None
-
-
-def thales_fetch():
-    os.makedirs(CACHE, exist_ok=True); lst = {}; off = 0; total = None
-    while True:
-        d = http(WD + "/jobs", {"appliedFacets": FACETS, "limit": 20, "offset": off, "searchText": ""})
-        total = total or d["total"]
-        for j in d["jobPostings"]:
-            if j.get("externalPath"): lst[j["externalPath"]] = j
-        off += 20
-        if off >= total or not d["jobPostings"]: break
-    p = os.path.join(CACHE, "details.json"); det = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
-    todo = [k for k in lst if k not in det]
-    with cf.ThreadPoolExecutor(6) as ex:
-        for k, d in zip(todo, ex.map(lambda k: http(WD + k), todo)):
-            if d: det[k] = d
-    det = {k: v for k, v in det.items() if k in lst}  # drop closed postings
-    json.dump(det, open(p, "w", encoding="utf-8"), ensure_ascii=False)
-    print(f"{total} listed, {len(det)} detailed")
-
-
-def details():
-    return {d["jobPostingInfo"]["jobReqId"]: d["jobPostingInfo"] for d in json.load(open(os.path.join(CACHE, "details.json"), encoding="utf-8")).values()}
-
-
-def applied_reqs():
-    txt = open(os.path.join(ROOT, "job_search_tracker.csv"), encoding="utf-8").read()
-    return set(re.findall(r"R0\d{6}", txt))
-
-
+# ---------------------------------------------------------------- theme scoring
 def theme_scores(text):
     t = text.lower(); return {k: sum(w * min(len(re.findall(rx, t)), 3) for rx, w in th["kw"].items()) for k, th in THEMES.items()}
-
-
-FIT_KW = {r"embarqu|embedded": 6, r"firmware|micrologiciel": 6, r"microcontr|stm32|esp32|arm cortex": 7, r"zephyr|freertos|rtos|temps r[ée]el": 4,
-          r"\bcan\b|uart|\bspi\b|i2c": 5, r"linux|yocto|driver|noyau|kernel": 4, r"c\+\+|langage c\b": 4, r"python": 2, r"banc de test|banc d.essai|moyens? d.essais?": 5,
-          r"validation|v[ée]rification|int[ée]gration": 2, r"capteur|sensor|imu|inertiel": 5, r"kalman|fusion de donn|filtrage": 6, r"ros ?2?\b|robot": 4,
-          r"opencv|vision|yolo|traitement d.image": 4, r"matlab|simulink": 3, r"[ée]lectronique": 3, r"oscillo": 3, r"prototyp|d[ée]monstrateur": 3, r"diagnosti": 3}
-NEG_TITLE = r"financ|contr[ôo]le de gestion|comptab|achat|procurement|ressources humaines|\brh\b|marketing|commercial|juridique|communication|supply|logisti|lean|qualit[ée] fournisseur|ouvrier|alternance|apprenti|business analyst|événementiel|evenementiel|vente|paie|immobilier|hse|ergonom|cfd|hydrodynam|m[ée]canique|thermique|optique|photoni|hyperspectr|cyber|attaque|hpc|cluster|5g|t[ée]l[ée]com|mbse|brouilleur|certification"
-
-
-def fit_score(j):
-    t = j["title"] + " " + clean_desc(j); s = 0
-    for rx, w in FIT_KW.items():
-        n = len(re.findall(rx, t, re.I)); s += w * min(n, 3) + (w * 2 if re.search(rx, j["title"], re.I) else 0)
-    return s
-
-
-def thales_queue(minscore=45):
-    D = details(); done = applied_reqs(); q = []
-    for r, j in D.items():
-        t = clean_desc(j)
-        if re.search(r"habilitation", t, re.I) and re.search(r"secret de la d[ée]fense|d[ée]fense nationale", t, re.I): continue
-        if re.search(r"ressortissant|nationalit[ée] (fran[cç]aise|europ)", t, re.I): continue
-        if re.search(NEG_TITLE, j["title"], re.I) or r in done: continue
-        s = fit_score(j)
-        if s >= minscore: q.append({"req": r, "score": s, "title": j["title"], "loc": j["location"], "url": j["externalUrl"]})
-    q.sort(key=lambda x: -x["score"])
-    json.dump(q, open(os.path.join(CACHE, "queue.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(len(q), "queued"); [print(x["score"], x["req"], x["title"][:80], "|", x["loc"]) for x in q[:15]]
 
 
 # ---------------------------------------------------------------- compose
@@ -251,7 +179,7 @@ def compose(j):
     desc = core(clean_desc(j)); sc = theme_scores((j["title"] + " ") * 4 + desc)
     theme = j.get("theme") or max(sc, key=sc.get); th = THEMES[theme]
     title = clean_title(j["title"]); site = j["location"].split(",")[0]
-    entity = j.get("company") or ("Thales Alenia Space" if "Alenia" in desc[:1500] else "Thales")
+    entity = j.get("company") or ""
     asked = []
     for rx, lab in SUPPORTED:
         if re.search(rx, desc, re.I) and lab not in asked: asked.append(lab)
@@ -261,15 +189,16 @@ def compose(j):
           "sidebar": [{"heading": SIDEBAR[k][0], "bullets": SIDEBAR[k][1]} for k in th["sidebar"]] + [{"heading": "Modules du Master", "bullets": th["modules"]}, {"heading": LANG[0], "lines": LANG[1]}],
           "sections": [{"heading": "Profil", "text": INTRO + " " + th["profile"]}, EDU, {"heading": "Expérience Professionnelle", "entries": [INNSPARK]},
                        {"heading": "Projets", "entries": [project(p) for p in th["projects"]]}]}
-    p1 = (f"Je vous adresse ma candidature pour le stage « {title} » chez {entity} à {site}. Ce sujet rejoint ce qui me motive le plus : {th['hook']}. "
+    p1 = (f"Je vous adresse ma candidature pour le stage « {title} » chez {entity} à {site}. Ce sujet rejoint ce qui me motive le plus : {j.get('hook') or th['hook']}. "
           "Je suis étudiant en dernière année de Master Systèmes Embarqués Automobile à l'ESIGELEC et je suis disponible immédiatement pour un stage de six mois, sous convention de stage ESIGELEC.")
     body = " ".join(EVID[e] for e in th["evid"][:3])
+    if j.get("extra"): body += " " + j["extra"]
     if asked:
         lst = ", ".join(asked[:-1]) + (" et " + asked[-1] if len(asked) > 1 else asked[0])
         body += f" Je pourrai ainsi mettre à profit {lst} dès mon arrivée et contribuer rapidement aux missions de votre équipe."
     else:
         body += " Je pourrai ainsi contribuer rapidement aux missions de votre équipe."
-    p3 = ("Je travaille couramment en anglais (C1) et je poursuis activement mon apprentissage du français. "
+    p3 = (""
           "Rigoureux, curieux et force de proposition, je serais heureux de vous présenter mes projets lors d'un entretien.")
     cl = {"name": "Rishikesh Sudheer", "contactLine": f"{CONTACT['location']} · {CONTACT['phone']} · {CONTACT['email']}", "date": "",
           "subject": f"Objet : Candidature — Stage {title}, {entity} {site} ({j['jobReqId']})", "salutation": "Madame, Monsieur,",
@@ -313,39 +242,14 @@ def verify(cv, cl, cvpdf, clpdf):
     return fails
 
 
-def build(req):
-    D = details(); j = D[req]
-    theme, sc, cv, cl = compose(j)
-    base = f"thales_{slugify(j['title'])}_{req.lower()}"
-    cvn, cln = f"main_{base}", f"cover_{base}"
-    json.dump(cv, open(os.path.join(ROOT, "cv", cvn + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    json.dump(cl, open(os.path.join(ROOT, "cover_letters", cln + ".json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    cvpdf = build_one("cv", cvn, "cv/rishi-sidebar"); clpdf = build_one("cover_letters", cln, "cover_letters/rishi-plain")
-    fails = verify(cv, cl, cvpdf, clpdf)
-    app = os.path.join(ROOT, "documents", "applications", base); os.makedirs(app, exist_ok=True)
-    for src, dst in ((cvpdf, "Rishikesh_Sudheer_Resume_Thales.pdf"), (cvpdf[:-4] + ".docx", "Rishikesh_Sudheer_Resume_Thales.docx"),
-                     (clpdf, "Lettre_Motivation_Thales.pdf"), (clpdf[:-4] + ".docx", "Lettre_Motivation_Thales.docx")):
-        shutil.copy(src, os.path.join(app, dst))
-    open(os.path.join(app, "job_posting.md"), "w", encoding="utf-8").write(
-        f"# {j['title']}\n\n- Company: Thales\n- Location: {j['location']}\n- Req: {req}\n- URL: {j['externalUrl']}\n- Theme: {theme} {sc}\n\n{clean_desc(j)}\n")
-    res = {"req": req, "theme": theme, "ok": not fails, "fails": fails, "dir": app, "title": j["title"], "url": j["externalUrl"],
-           "apply": j["externalUrl"].replace("/Careers/", "/fr-FR/Careers/") + "/apply/useMyLastApplication",
-           "cv": os.path.join(app, "Rishikesh_Sudheer_Resume_Thales.pdf"), "cl": os.path.join(app, "Lettre_Motivation_Thales.pdf"),
-           "cv_file": f"cv/{cvn}.json", "cl_file": f"cover_letters/{cln}.json"}
-    p = os.path.join(CACHE, "built.json"); B = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
-    B[req] = res; json.dump(B, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(json.dumps({k: res[k] for k in ("req", "theme", "ok", "fails", "apply")}, ensure_ascii=False))
-    return res
-
-
 def build_ext(specf):
-    """Generic posting (any company): spec json {company, title, location, id, url, description, slug?}."""
-    sp = json.load(open(specf, encoding="utf-8"))
+    """Generic posting (any company): spec json path or dict {company, title, location, id, url, description, slug?}."""
+    sp = dict(specf) if isinstance(specf, dict) else json.load(open(specf, encoding="utf-8"))
     # strip campaign prefixes such as "CS27 Bac+5 - Stage" so the subject line reads naturally
     sp["title"] = re.sub(r"^\s*(CS\d+\s*[-–]?\s*)?(BAC\s*\+\s*\d\s*[-–]?\s*)?(Stage\s*[-–:]?\s*)?", "", sp["title"], flags=re.I).strip() or sp["title"]
-    sp["title"] = re.sub(r"\s*\(?[HF]\s*/\s*[HF]\)?\s*$", "", sp["title"]).strip()
+    sp["title"] = re.sub(r"\s*\(?\b[HF]\s*/\s*[HF]\)?\s*$", "", sp["title"]).strip()
     j = {"title": sp["title"], "location": sp["location"], "jobReqId": sp["id"], "jobDescription": html.escape(sp["description"]),
-         "externalUrl": sp["url"], "company": sp["company"], "theme": sp.get("theme")}
+         "externalUrl": sp["url"], "company": sp["company"], "theme": sp.get("theme"), "hook": sp.get("hook"), "extra": sp.get("extra")}
     theme, sc, cv, cl = compose(j)
     co = slugify(sp["company"], 20); base = sp.get("slug") or f"{co}_{slugify(sp['title'], 45)}"
     cvn, cln = f"main_{base}", f"cover_{base}"
@@ -364,31 +268,21 @@ def build_ext(specf):
     print(json.dumps({"id": sp["id"], "theme": theme, "ok": not fails, "fails": fails, "dir": app, "cv_file": f"cv/{cvn}.json", "cl_file": f"cover_letters/{cln}.json"}, ensure_ascii=False))
 
 
-def record(req, fit=""):
-    B = json.load(open(os.path.join(CACHE, "built.json"), encoding="utf-8")); b = B[req]
-    if req in applied_reqs(): print("already in tracker"); return
-    p = os.path.join(ROOT, "job_search_tracker.csv")
-    with open(p, encoding="utf-8") as f: header = next(csv.reader(f))
-    row = {"date": time.strftime("%Y-%m-%d"), "company": "Thales", "sector": "Defence / aerospace / electronics", "role": b["title"], "role_type": "internship",
-           "channel": f"Thales Workday ({WORKDAY_ACCOUNT})", "status": "applied", "fit_rating": fit,
-           "notes": f"{req}; autodoc theme {b['theme']}; no habilitation clause; CV+letter (FR); {b['url']}", "cv_file": b["cv_file"],
-           "cover_letter_file": b["cl_file"], "source": "Thales careers (Workday)"}
-    with open(p, "a", newline="", encoding="utf-8") as f: csv.DictWriter(f, fieldnames=header, extrasaction="ignore").writerow(row)
-    open(os.path.join(b["dir"], "submission.md"), "w", encoding="utf-8").write(
-        f"# Submission\n\n- Date: {row['date']}\n- Channel: Thales Workday, account {WORKDAY_ACCOUNT}\n- Job: {b['title']} ({req})\n- URL: {b['url']}\n"
-        "- Files: Rishikesh_Sudheer_Resume_Thales.pdf, Lettre_Motivation_Thales.pdf\n- Confirmation: 'Candidature soumise'\n")
-    print("recorded", req)
+
+def spec_from_db(pid):
+    """A jobs.db posting -> build_ext spec (description falls back to the title when none was fetched)."""
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import jobsdb
+    r = jobsdb.connect().execute("SELECT * FROM postings WHERE id=?", (int(pid),)).fetchone()
+    if not r:
+        raise SystemExit(f"no posting {pid} in data/jobs.db")
+    return {"company": r["company"] or "", "title": r["title"] or "", "location": r["location"] or "",
+            "id": r["portal_id"] or str(r["id"]), "url": r["url"] or "", "description": r["description"] or r["title"] or ""}
 
 
 if __name__ == "__main__":
     a = sys.argv[1:]
     if not a: print(__doc__); sys.exit()
-    if a[0] == "thales-fetch": thales_fetch()
-    elif a[0] == "thales-queue": thales_queue(int(a[a.index("--min") + 1]) if "--min" in a else 45)
-    elif a[0] == "build": [build(r) for r in a[1:]]
-    elif a[0] == "build-next":
-        q = json.load(open(os.path.join(CACHE, "queue.json"), encoding="utf-8"))
-        B = json.load(open(os.path.join(CACHE, "built.json"), encoding="utf-8")) if os.path.exists(os.path.join(CACHE, "built.json")) else {}
-        for x in [x for x in q if x["req"] not in B][: int(a[1])]: build(x["req"])
-    elif a[0] == "build-ext": [build_ext(f) for f in a[1:]]
-    elif a[0] == "record": record(a[1], a[2] if len(a) > 2 else "")
+    if a[0] == "build-ext": [build_ext(f) for f in a[1:]]
+    elif a[0] == "build-db": [build_ext(spec_from_db(i)) for i in a[1:]]
+    else: print(__doc__); sys.exit(1)

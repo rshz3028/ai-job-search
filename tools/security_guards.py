@@ -72,20 +72,12 @@ ALLOWED_PERMISSIONS = {
     # matching what each SKILL.md already declares in its allowed-tools.
     # A portal added by /add-portal needs its own entry here and in
     # .claude/settings.json - that review step is the point.
-    "Bash(bun run .agents/skills/jobbank-search/cli/src/cli.ts:*)",
-    "Bash(bun run .agents/skills/jobdanmark-search/cli/src/cli.ts:*)",
-    "Bash(bun run .agents/skills/jobindex-search/cli/src/cli.ts:*)",
-    "Bash(bun run .agents/skills/jobnet-search/cli/src/cli.ts:*)",
     "Bash(bun run .agents/skills/linkedin-search/cli/src/cli.ts:*)",
     "Bash(bun run .agents/skills/freehire-search/cli/src/cli.ts:*)",
     "Bash(python salary_lookup.py:*)",
     "Bash(python3 salary_lookup.py:*)",
-    "Bash(python tools/rank_state.py:*)",
-    "Bash(python3 tools/rank_state.py:*)",
     "Bash(python tools/job_key.py:*)",
     "Bash(python3 tools/job_key.py:*)",
-    "Bash(python tools/scrape_state.py:*)",
-    "Bash(python3 tools/scrape_state.py:*)",
     "Bash(python tools/verify_pdf.py:*)",
     "Bash(python3 tools/verify_pdf.py:*)",
     "Bash(python tools/verify_layout.py:*)",
@@ -300,8 +292,6 @@ ALLOWED_SKILL_TOOLS = {
     "Bash(bun --version)",
     "Bash(python tools/job_key.py:*)",
     "Bash(python3 tools/job_key.py:*)",
-    "Bash(python tools/scrape_state.py:*)",
-    "Bash(python3 tools/scrape_state.py:*)",
 }
 
 # The tools a shipped .claude/agents/*.md may list. These agents read untrusted
@@ -409,7 +399,9 @@ def check_skill_tool_grants() -> None:
     skills = sorted(ROOT.glob(".claude/skills/*/SKILL.md")) + sorted(
         ROOT.glob(".agents/skills/*/SKILL.md")
     )
-    commands = sorted((ROOT / ".claude" / "commands").glob("*.md"))
+    # rglob, not glob: Claude Code loads namespaced commands from subfolders of
+    # .claude/commands/, so a grant in commands/ops/evil.md is live too.
+    commands = sorted((ROOT / ".claude" / "commands").rglob("*.md"))
     for path in skills + commands:
         rel = path.relative_to(ROOT).as_posix()
         try:
@@ -785,7 +777,7 @@ def check_tracked_node_modules() -> None:
 
 
 def check_agent_tool_grants() -> None:
-    for path in sorted((ROOT / ".claude" / "agents").glob("*.md")):
+    for path in sorted((ROOT / ".claude" / "agents").rglob("*.md")):
         rel = path.relative_to(ROOT).as_posix()
         try:
             data = _frontmatter(path.read_text(encoding="utf-8"))

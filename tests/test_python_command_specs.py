@@ -41,9 +41,7 @@ SPECS = sorted(
 
 # Specs known to run a tool today; the glob must keep finding them.
 KNOWN_TOOL_SPECS = {
-    ".claude/commands/rank.md",
     ".claude/commands/apply.md",
-    ".claude/skills/job-scraper/SKILL.md",
     ".claude/skills/job-application-assistant/04-job-evaluation.md",
     ".claude/skills/job-application-assistant/05-cv-templates.md",
     ".claude/skills/job-application-assistant/09-web-research.md",
