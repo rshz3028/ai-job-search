@@ -1,13 +1,17 @@
 # Thales (Workday) fast-apply playbook (learned 2026-11-11)
 
-Documents come from `tools/autodoc.py`, the form helper from `tools/workday_thales.js`.
+> **Thales is in `job_scraper/excluded_employers.txt` (defence) and disabled in `config/bulk.json`.** This playbook is kept as the
+> reference for a Workday bulk employer: copy the form and screening notes for another Workday tenant.
+
+Postings come from `pipeline.py bulk thales` (Workday adapter), documents from `tools/autodoc.py build-db`, the form helper from `tools/bulk/thales/form.js`.
 
 ## 1. Find, filter, build (no hand-written documents)
 ```
-python tools/autodoc.py thales-fetch          # Workday API, ~917 France internships, cache job_scraper/thales/
-python tools/autodoc.py thales-queue          # drops habilitation/secret-défense (~156), nationality clauses, off-profile titles, already-applied reqs
-python tools/autodoc.py build-next 5          # theme -> CV + letter (FR) -> docx/pdf -> automatic checks
-python tools/autodoc.py record <REQ> <fit>    # after a confirmed submit
+python tools/pipeline.py bulk thales --rank    # Workday API (~917 France internships) -> jobs.db found -> rank (clearance,
+                                               # nationality, off-profile titles, already applied all handled there)
+python tools/pipeline.py next                  # best fit first
+python tools/autodoc.py build-db <id>          # theme -> CV + letter (FR) -> docx/pdf -> automatic checks
+python tools/app.py done <row> ...             # after a confirmed submit; then pipeline.py mark <id> applied
 ```
 - API: `POST https://thales.wd3.myworkdayjobs.com/wday/cxs/thales/Careers/jobs`, facets `workerSubType=47200b8529d910215e133a260a722492` (Intern/Trainee), `locationCountry=54c5b6971ffb4bf0b116fe7651ec789a` (France). Detail: `GET .../wday/cxs/thales/Careers<externalPath>`. `total` only on page 1.
 - Build checks (`"ok": true` required): CV and letter exactly 1 page, contact as text, last tech term present (no clipping), letter closing present, no unclaimed/banned terms, no dashes in letter prose. Fix failures in THEMES/EVID of `autodoc.py`, never per job.
@@ -15,7 +19,7 @@ python tools/autodoc.py record <REQ> <fit>    # after a confirmed submit
 
 ## 2. Form (account <workday_account from profile.local.json>; the candidate logs in, never type the password)
 The `apply` URL ("Utiliser ma dernière candidature") pre-fills name, address, phone, education, LinkedIn and the PREVIOUS files.
-Helper: once per Chrome profile `localStorage.wdThales = <workday_thales.js text>`; on each application `eval(localStorage.wdThales)`.
+Helper: once per Chrome profile `localStorage.wdThales = <tools/bulk/thales/form.js text>`; on each application `eval(localStorage.wdThales)`.
 
 | Step | What | How |
 |---|---|---|
@@ -31,7 +35,7 @@ Helper: once per Chrome profile `localStorage.wdThales = <workday_thales.js text
 3. JS: sleep 3000, `wd.next()`, sleep 1500, if step is Questions run `wd.questions()` (selects only; the two textareas set by script do NOT register: real triple_click + ctrl+a + type them).
 4. Questions only: `find` labels + Day spinbutton; batch the 12 region label clicks (refs step by 4), date typing, textareas, click blank (1350,200), real click "Enregistrer et continuer" (may need 2 clicks).
 5. Declaration batch (positions are deterministic after scrollIntoView center): JS scroll gender input to center, click (563,348), JS scroll option "Préfère ne pas répondre" to center, click (575,347), click (1350,200), JS `wd.consentXY()`, click (417,347), JS `wd.next()` + `wd.review()`.
-6. batch: `wd.submit()`, wait 4, check `Candidature soumise`; then `python tools/autodoc.py record <REQ> <fit>`.
+6. batch: `wd.submit()`, wait 4, check `Candidature soumise`; then record it (`app.py done`, `pipeline.py mark <id> applied`).
 
 ## Post-application screening (8 questions, one email per application)
 After each Workday submit, Thales emails <workday_account from profile.local.json> "Thales - Invites you to participate in our screening process" (all in ONE Gmail thread; deadline ~4 days). Each "Get Started" opens careers.thalesgroup.com/global/en/screening-answering.

@@ -141,3 +141,7 @@ job_scraper/postings/
 
 # Part-time CV variants contain contact details: keep local only
 cv/pt_*.json
+
+# Pipeline database (postings, queries, login results; rebuildable with tools/pipeline.py refill)
+data/jobs.db
+data/*.db-journal

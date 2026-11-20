@@ -7,7 +7,6 @@ Prints at most ~8 lines: inbox freshness, internship counts, open claims, queued
 """
 from __future__ import annotations
 
-import json
 import subprocess
 import sys
 from collections import Counter
@@ -41,14 +40,10 @@ def main(argv):
     if q.exists():
         open_q = [l for l in q.read_text(encoding="utf-8").splitlines() if l.startswith("- ") and "[DONE" not in l]
         print(f"manual queue: {len(open_q)} open")
-    try:
-        jobs = json.loads(run("tools/next_job.py", "--limit", limit) or "[]")
-    except ValueError:
-        jobs = []
-    for j in jobs:
-        print(f"next: {j.get('score')} | {j.get('company', '')[:28]} | {j.get('title', '')[:70]} | {j.get('url', '')}")
-    if not jobs:
-        print("next: none ranked >= 60 -> " + run("tools/next_job.py", "--count").replace("\n", " ")[:120])
+    if limit == "0":
+        return
+    print(run("tools/pipeline.py", "next", "--limit", limit))  # pipeline database (docs/PIPELINE.md)
+    print(run("tools/jobsdb.py", "stats"))
 
 
 if __name__ == "__main__":

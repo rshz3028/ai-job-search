@@ -1,0 +1,24 @@
+{
+ "_doc": "Track parttime, stage I map: English-speaking part-time student jobs (<= 20-24 h/week) in the Paris region, hotels and hostels first. Every family is always on (the profile does not gate them). weight orders the queries. portals = where search_all.py runs them (HelloWork has no reliable part-time filter, so it is left out).",
+ "location": "Paris, Île-de-France, France",
+ "jobage_days": 14,
+ "portals": ["linkedin", "jobijoba", "freehire"],
+ "jobijoba_where": "Paris",
+ "families": [
+  {"name": "hotel night reception", "weight": 10, "always": true,
+   "en": ["night receptionist", "night front office", "night auditor", "night porter hotel"],
+   "fr": ["réceptionniste de nuit temps partiel", "veilleur de nuit hôtel", "réceptionniste de nuit week-end"]},
+  {"name": "hotel reception", "weight": 9, "always": true,
+   "en": ["receptionist part time", "front desk agent part time", "front office host", "hotel receptionist english"],
+   "fr": ["réceptionniste temps partiel", "réceptionniste extra", "réceptionniste week-end"]},
+  {"name": "hostel", "weight": 9, "always": true,
+   "en": ["hostel reception", "hostel crew", "hostel night"],
+   "fr": ["auberge de jeunesse réceptionniste"]},
+  {"name": "guest services", "weight": 7, "always": true,
+   "en": ["guest services agent", "guest relations part time", "room service part time", "hotel extra"],
+   "fr": ["employé polyvalent hôtel temps partiel", "petit-déjeuner hôtel temps partiel", "room service extra"]},
+  {"name": "english-speaking front of house", "weight": 6, "always": true,
+   "en": ["english speaking receptionist", "english speaking host paris", "front of house assistant"],
+   "fr": ["hôte d'accueil anglais temps partiel"]}
+ ]
+}

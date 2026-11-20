@@ -1,0 +1,57 @@
+{
+  "_doc": "Login registry for tools/portal_login.py. No passwords here: they live in Windows Credential Manager (service 'ai-job-search', one entry per 'credential' name), set by the candidate with `python tools/portal_login.py set <portal>`. 'account' is a key of profile.local.json (email, workday_account, school_email) or a literal login name. 'verify': true = URL not yet confirmed on a live run; `portal_login.py test <portal>` checks it and the first good login clears it. Presets: workday, successfactors, talentsoft, icims_linkedin, generic. Add a portal: copy an entry; per-portal selectors (user, password, submit, open, ok, logged_out) override the preset.",
+  "chrome": {
+    "user_data_dir": "%LOCALAPPDATA%\\ai-job-search\\chrome-jobs",
+    "port": 9222,
+    "exe": ""
+  },
+  "portals": {
+    "linkedin":        {"preset": "generic", "account": "email", "login_url": "https://www.linkedin.com/login",
+                        "ok_url": "linkedin\\.com/(feed|jobs|in/|mynetwork)"},
+    "wttj":            {"preset": "generic", "account": "email", 
+                        "login_url": "https://www.welcometothejungle.com/fr/signin"},
+    "hellowork":       {"preset": "generic", "account": "email", 
+                        "login_url": "https://www.hellowork.com/fr-fr/candidat/connexion-inscription.html"},
+    "glassdoor":       {"preset": "generic", "account": "email", "verify": true, "passwordless": true,
+                        "open": "button:has-text('e-mail'), button:has-text('email')",
+                        "login_url": "https://www.glassdoor.fr/profile/login_input.htm"},
+    "indeed":          {"preset": "generic", "account": "email", "verify": true, "passwordless": true,
+                        "login_url": "https://secure.indeed.com/auth"},
+    "jobteaser":       {"preset": "generic", "account": "school_email", 
+                        "login_url": "https://esigelec.jobteaser.com/fr/users/sign_in"},
+
+    "workday-renault": {"preset": "workday", "account": "workday_account", "credential": "workday-renault",
+                        "login_url": "https://alliancewd.wd3.myworkdayjobs.com/fr-FR/renault-group-careers/login"},
+    "workday-valeo":   {"preset": "workday", "account": "workday_account",
+                        "login_url": "https://valeo.wd3.myworkdayjobs.com/fr-FR/valeo_jobs/login"},
+    "workday-gevernova": {"preset": "workday", "account": "workday_account", 
+                        "login_url": "https://gevernova.wd5.myworkdayjobs.com/en-US/Vernova_ExternalSite/login"},
+    "workday-gehc":    {"preset": "workday", "account": "workday_account", 
+                        "login_url": "https://gehc.wd5.myworkdayjobs.com/en-US/GEHC_ExternalSite/login"},
+    "workday-cadence": {"preset": "workday", "account": "workday_account", 
+                        "login_url": "https://cadence.wd1.myworkdayjobs.com/External_Careers/login"},
+
+    "sf-skf":          {"preset": "successfactors", "account": "workday_account", 
+                        "login_url": "https://career5.successfactors.eu/career?company=SKF&navBarLevel=MY_PROFILE"},
+    "sf-capgemini":    {"preset": "successfactors", "account": "email", 
+                        "login_url": "https://career5.successfactors.eu/career?company=capgemitecP3&navBarLevel=MY_PROFILE"},
+    "sf-schaeffler":   {"preset": "successfactors", "account": "email", "verify": true,
+                        "login_url": "https://career2.successfactors.eu/career?company=VitescoProd&navBarLevel=MY_PROFILE"},
+
+    "talentsoft-safran":   {"preset": "talentsoft", "account": "email", 
+                        "login_url": "https://careers.safran-group.com/my-account/log-in.aspx"},
+    "talentsoft-sagemcom": {"preset": "talentsoft", "account": "email", "verify": true,
+                        "login_url": "https://careers.sagemcom.com/my-account/log-in.aspx"},
+    "talentsoft-stellantis": {"preset": "talentsoft", "account": "email", 
+                        "login_url": "https://jobs.groupe-psa.com/my-account/log-in.aspx"},
+    "talentsoft-pellenc":  {"preset": "talentsoft", "account": "email", 
+                        "login_url": "https://pellencst-career.talent-soft.com/my-account/log-in.aspx"},
+
+    "icims-schneider": {"preset": "icims_linkedin", "account": "email", "verify": true,
+                        "login_url": "https://frcareers-se.icims.com/jobs/login"},
+    "avature-siemens": {"preset": "generic", "account": "email", 
+                        "login_url": "https://jobs.siemens.com/externaljobs/Login"},
+    "eightfold-qualcomm": {"preset": "generic", "account": "email", "verify": true, "open": "button:has-text('Sign in')",
+                        "login_url": "https://careers.qualcomm.com/careers?login=1"}
+  }
+}

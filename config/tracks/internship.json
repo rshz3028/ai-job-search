@@ -1,0 +1,218 @@
+{
+ "_doc": "Track internship, stage I map: tools/keywords.py --track internship turns a family on when any of its profile terms appears in the candidate profile (or always is true) and writes its queries to data/jobs.db. weight orders the queries (high first). portals = where search_all.py runs them.",
+ "location": "France",
+ "jobage_days": 14,
+ "portals": [
+  "linkedin",
+  "hellowork",
+  "freehire",
+  "jobijoba"
+ ],
+ "hellowork_contract": "Stage",
+ "families": [
+  {
+   "name": "embedded software",
+   "weight": 10,
+   "profile": [
+    "embedded c",
+    "stm32",
+    "esp32",
+    "microcontroller",
+    "firmware"
+   ],
+   "en": [
+    "embedded software intern",
+    "firmware intern",
+    "embedded systems internship"
+   ],
+   "fr": [
+    "stage systèmes embarqués",
+    "stage logiciel embarqué",
+    "stage firmware"
+   ]
+  },
+  {
+   "name": "automotive embedded",
+   "weight": 10,
+   "profile": [
+    "can bus",
+    "obd",
+    "automotive",
+    "uds"
+   ],
+   "en": [
+    "automotive embedded intern",
+    "can bus internship"
+   ],
+   "fr": [
+    "stage électronique automobile",
+    "stage diagnostic véhicule",
+    "stage calculateur automobile"
+   ]
+  },
+  {
+   "name": "embedded linux",
+   "weight": 8,
+   "profile": [
+    "yocto",
+    "embedded linux",
+    "beaglebone",
+    "kernel"
+   ],
+   "en": [
+    "embedded linux intern"
+   ],
+   "fr": [
+    "stage linux embarqué"
+   ]
+  },
+  {
+   "name": "electronics / test",
+   "weight": 8,
+   "profile": [
+    "oscilloscope",
+    "pcb",
+    "electronics",
+    "prototype"
+   ],
+   "en": [
+    "electronics engineering intern",
+    "hardware test intern",
+    "validation engineer intern"
+   ],
+   "fr": [
+    "stage électronique",
+    "stage banc de test",
+    "stage validation électronique"
+   ]
+  },
+  {
+   "name": "robotics / perception",
+   "weight": 8,
+   "profile": [
+    "ros2",
+    "opencv",
+    "yolo",
+    "robot"
+   ],
+   "en": [
+    "robotics intern",
+    "computer vision intern"
+   ],
+   "fr": [
+    "stage robotique",
+    "stage vision par ordinateur"
+   ]
+  },
+  {
+   "name": "sensor fusion / control",
+   "weight": 8,
+   "profile": [
+    "kalman",
+    "sensor fusion",
+    "simulink",
+    "closed-loop"
+   ],
+   "en": [
+    "sensor fusion intern",
+    "control engineering intern",
+    "matlab simulink intern"
+   ],
+   "fr": [
+    "stage fusion de capteurs",
+    "stage contrôle commande",
+    "stage automatique simulink"
+   ]
+  },
+  {
+   "name": "power electronics",
+   "weight": 7,
+   "profile": [
+    "mppt",
+    "sepic",
+    "power electronics",
+    "converter"
+   ],
+   "en": [
+    "power electronics intern"
+   ],
+   "fr": [
+    "stage électronique de puissance",
+    "stage convertisseur"
+   ]
+  },
+  {
+   "name": "IoT",
+   "weight": 6,
+   "profile": [
+    "bluetooth",
+    "zigbee",
+    "iot",
+    "freertos"
+   ],
+   "en": [
+    "iot intern"
+   ],
+   "fr": [
+    "stage iot objets connectés"
+   ]
+  },
+  {
+   "name": "EMC (interest)",
+   "weight": 6,
+   "always": true,
+   "profile": [],
+   "en": [
+    "emc intern"
+   ],
+   "fr": [
+    "stage cem compatibilité électromagnétique"
+   ]
+  },
+  {
+   "name": "motorsport (interest)",
+   "weight": 5,
+   "always": true,
+   "profile": [],
+   "en": [
+    "motorsport intern",
+    "formula 1 internship"
+   ],
+   "fr": [
+    "stage sport automobile"
+   ]
+  },
+  {
+   "name": "aerospace / medtech / subsea (scope)",
+   "weight": 5,
+   "always": true,
+   "profile": [],
+   "en": [
+    "avionics intern",
+    "medical device engineering intern"
+   ],
+   "fr": [
+    "stage avionique",
+    "stage dispositif médical électronique",
+    "stage sous-marin électronique"
+   ]
+  },
+  {
+   "name": "embedded AI",
+   "weight": 4,
+   "profile": [
+    "k210",
+    "quantized",
+    "machine learning",
+    "pytorch"
+   ],
+   "en": [
+    "embedded ai intern",
+    "edge ai internship"
+   ],
+   "fr": [
+    "stage ia embarquée"
+   ]
+  }
+ ]
+}

@@ -51,7 +51,8 @@ STATUS_RANK = {"interview": 0, "offer": 0, "hired": 0, "applied": 1, "drafted": 
 
 
 def fold(s: str) -> str:
-    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode().lower()
+    s = re.sub(r"[’‘'`]", " ", s or "")  # d’Énergie -> d energie, not denergie
+    s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", " ", s).strip()
 
 
@@ -72,13 +73,31 @@ ID_RES = [
     re.compile(r"job-offers/([0-9a-f]{8}-[0-9a-f-]{27})"),
     re.compile(r"glassdoor\.[a-z.]+/\S*?[?&]jl=(\d{8,})"),
     re.compile(r"hellowork\.com/[a-z-]+/emplois/(\d{6,})"),
+    re.compile(r"(jobreq[_ ]\d{6,})", re.I),  # Workday requisition id (Renault/Alliance), in URL or role
 ]
+
+
+URL_GENERIC = {"www", "com", "fr", "io", "co", "net", "org", "jobs", "job", "careers", "career", "carrieres",
+               "emploi", "emplois", "recrutement", "apply", "boards", "myworkdayjobs", "workday", "greenhouse",
+               "lever", "smartrecruiters", "teamtailor", "talentsoft", "successfactors", "icims", "taleo",
+               "recruitee", "welcometothejungle", "linkedin", "hellowork", "jobteaser", "indeed", "freehire",
+               "jobijoba", "wd1", "wd2", "wd3", "wd5", "wd103", "external", "en", "us", "site", "offres", "offre"}
+
+
+def url_co_keys(url: str) -> list[str]:
+    """Company keys hidden in an ATS URL (host + first path segment), for postings whose company field is the
+    ATS tenant name, e.g. freehire's 'alliancewd' for alliancewd.wd3.myworkdayjobs.com/renault-group-careers."""
+    m = re.match(r"https?://([^/?#]+)(/[^/?#]*)?", url or "")
+    if not m:
+        return []
+    toks = fold(m.group(1) + " " + (m.group(2) or "")).split()
+    return [t for t in dict.fromkeys(toks) if len(t) >= 4 and t not in URL_GENERIC and t not in CO_DROP]
 
 
 def ids_in(text: str) -> set[str]:
     out = set()
     for r in ID_RES:
-        out.update(m.lower() for m in r.findall(text or ""))
+        out.update(m.lower().replace(" ", "_") for m in r.findall(text or ""))
     return out
 
 
@@ -97,7 +116,7 @@ def build() -> dict:
     for n, r in enumerate(rows[1:], 1):
         g = dict(zip(h, r + [""] * (len(h) - len(r))))
         recs.append({"c": co_key(g["company"]), "t": t_toks(g["role"]),
-                     "ids": sorted(ids_in(g["source"] + " " + g["notes"])),
+                     "ids": sorted(ids_in(g["source"] + " " + g["notes"] + " " + g["role"])),
                      "s": g["status"], "why": f"r{n} {g['date']} {g['role_type']} fit {g['fit_rating']}",
                      "lbl": f"{g['company'][:24]} | {g['role'][:55]}"})
     if SEEN.exists():
@@ -156,7 +175,8 @@ class Lookup:
         if not tt:
             return None
         cand = []
-        for i in self.by_co.get(co_key(company), []):
+        keys = [co_key(company)] + [k for k in url_co_keys(url) if k != co_key(company) and k in self.by_co]
+        for i in (i for k in keys for i in self.by_co.get(k, [])):
             rt = set(self.recs[i]["t"])
             if not rt:
                 continue

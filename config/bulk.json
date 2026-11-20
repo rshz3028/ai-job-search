@@ -1,0 +1,20 @@
+{
+  "_doc": "Bulk employer sources (tools/bulk/__init__.py). One entry per big employer pulled straight from its careers API with `python tools/pipeline.py bulk <name>`. enabled=false refuses the fetch (use for excluded or paused employers). Extras live in tools/bulk/<name>/ (PLAYBOOK.md, form.js).",
+  "employers": {
+    "thales": {
+      "adapter": "workday",
+      "company": "Thales",
+      "track": "internship",
+      "enabled": false,
+      "disabled_reason": "Thales is in job_scraper/excluded_employers.txt (defence). Kept as the reference Workday entry: copy it for another Workday tenant.",
+      "endpoint": "https://thales.wd3.myworkdayjobs.com/wday/cxs/thales/Careers",
+      "facets": {
+        "workerSubType": ["47200b8529d910215e133a260a722492"],
+        "locationCountry": ["54c5b6971ffb4bf0b116fe7651ec789a"]
+      },
+      "apply_url": "{url}/apply/useMyLastApplication",
+      "playbook": "tools/bulk/thales/PLAYBOOK.md",
+      "form_helper": "tools/bulk/thales/form.js"
+    }
+  }
+}

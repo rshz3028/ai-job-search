@@ -157,6 +157,15 @@ def cmd_draft(args):
         print(f"DRAFT FAIL {base}: fix {rel(d_cv)} / {rel(d_co)} with Edit, then "
               f"python tools/app.py draft {args[0]} --keep{tail}")
         sys.exit(1)
+    # A rebuild (--keep, or a rerun) must not add a second row for the same CV file.
+    h, recs, _, _ = tracker.load()
+    ci = h.index("cv_file") if "cv_file" in h else -1
+    existing = next((i for i in range(1, len(recs)) if ci >= 0 and len(recs[i]) > ci
+                     and recs[i][ci].replace("\\", "/") == rel(d_cv).replace("\\", "/")), None)
+    if existing:
+        print(f"DRAFTED {spec['company']} | row {existing} (rebuilt) | {deliv.removeprefix('delivery: ').replace(chr(92), '/')} "
+              f"| PDFs: Read once for layout")
+        return
     buf = io.StringIO()
     with redirect_stdout(buf):
         tracker.cmd_add([f"company={spec['company']}", f"role={spec['role']}",
